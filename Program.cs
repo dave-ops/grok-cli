@@ -3,8 +3,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using GrokCS;
-using static GrokCS.ParseGrokResponse;
-using static GrokCS.GetRateLimit;
 
 static async Task Main(string[] args)
 {
@@ -20,7 +18,8 @@ static async Task Main(string[] args)
                 Console.WriteLine("Error: Please provide a filepath for upload (e.g., dotnet run -- upload C:\\temp\\screenshot.png)");
                 return;
             }
-            await Upload(parameter);
+            FileInfo f = FileHelper.GetFileInfo(parameter);
+            await new Upload().Execute(f);
             break;
 
         case "grok":
@@ -29,16 +28,15 @@ static async Task Main(string[] args)
                 Console.WriteLine("Error: Please provide a message for Grok (e.g., dotnet run -- grok \"Hello, Grok!\")");
                 return;
             }
-            await Grok(parameter);
+            await new Grok3().Execute();
             break;
 
         case "ratelimit":
-            await GetRateLimit();
+            await new GetRateLimit().Execute();
             break;
 
         default:
-            // Default to Grok with no parameter (or an empty message if you want)
-            await Grok(parameter ?? "Default Grok message");
+            await new Grok3().Execute();
             break;
     }
 }
@@ -53,7 +51,7 @@ async Task Grok(string message)
 async Task Upload(string filePath)
 {
     Console.WriteLine("uploading...");
-    var upload = new Upload();
+    var upload = new Upload(); // Create an instance of the Upload class
     var file = new FileInfo(filePath);
     string result = await upload.Execute(file);
     Console.WriteLine(result);
