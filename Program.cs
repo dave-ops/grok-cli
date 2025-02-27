@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using static GrokCS.ParseGrokResponse;
 
 var client = new HttpClient();
 var url = "https://grok.com/rest/app-chat/conversations/new";
@@ -34,6 +35,9 @@ try
 
     var responseText = Encoding.UTF8.GetString(responseBytes);
     Console.WriteLine($"Raw Text: {responseText}");
+
+    var parsedMessage = GrokCS.HandleGrokResponse.HandleResponse(responseBytes);
+    Console.WriteLine($"Parsed Message: {parsedMessage}");
 }
 catch (HttpRequestException ex)
 {

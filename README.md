@@ -3,9 +3,10 @@
 ## create
 ```
 dotnet new console -n GrokCS
-dotnet add package Grpc.Net.Client
+dotnet add package Grpc.Net.Clienth
 dotnet add package Google.Protobuf
 dotnet add package Grpc.Tools
+dotnet add package System.Text.Json
 dotnet build
 dotnet run
 ```
