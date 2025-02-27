@@ -36,7 +36,7 @@ try
     var responseText = Encoding.UTF8.GetString(responseBytes);
     Console.WriteLine($"Raw Text: {responseText}");
 
-    var parsedMessage = GrokCS.HandleGrokResponse.HandleResponse(responseBytes);
+    var parsedMessage = GrokCS.ParseGrokResponse.ParseResponse(responseBytes);
     Console.WriteLine($"Parsed Message: {parsedMessage}");
 }
 catch (HttpRequestException ex)

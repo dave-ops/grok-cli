@@ -5,17 +5,17 @@ using System.Text;
 namespace GrokCS
 {
     // Classes to match the JSON structure
-    public class Conversation
-    {
-        public string conversationId { get; set; }
-        public string title { get; set; }
-        public bool starred { get; set; }
-        public DateTime createTime { get; set; }
-        public DateTime modifyTime { get; set; }
-        public string systemPromptName { get; set; }
-        public bool temporary { get; set; }
-        public string[] mediaTypes { get; set; }
-    }
+public class Conversation
+{
+    public string? conversationId { get; set; }
+    public string? title { get; set; }
+    public bool starred { get; set; }
+    public DateTime createTime { get; set; }
+    public DateTime modifyTime { get; set; }
+    public string? systemPromptName { get; set; }
+    public bool temporary { get; set; }
+    public string?[] mediaTypes { get; set; }
+}
 
     public class UserResponse
     {
