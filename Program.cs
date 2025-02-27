@@ -2,7 +2,12 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GrokCS;
 using static GrokCS.ParseGrokResponse;
+using static GrokCS.GetRateLimit;
+
+Console.WriteLine(new GetRateLimit().Execute().Result);
+return;
 
 var client = new HttpClient();
 var url = "https://grok.com/rest/app-chat/conversations/new";
