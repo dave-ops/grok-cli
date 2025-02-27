@@ -7,8 +7,10 @@ using GrokCS;
 static async Task Main(string[] args)
 {
     // Default to Grok if no arguments or invalid command is provided
-    string command = args.Length > 0 ? args[0].ToLower() : "grok";
-    string parameter = args.Length > 1 ? args[1] : null;
+    string commandPrefix = args.Length > 0 && args[0].ToLower() == "grok" ? "grok" : "";
+    string command = args.Length > (commandPrefix == "grok" ? 1 : 0) ? 
+    (commandPrefix == "grok" ? args[1].ToLower() : args[0].ToLower()) : "grok";
+    string parameter = args.Length > (commandPrefix == "grok" ? 2 : 1) ? args[commandPrefix == "grok" ? 2 : 1] : null;
 
     switch (command)
     {
