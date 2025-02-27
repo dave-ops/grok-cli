@@ -4,65 +4,56 @@ using System.Text;
 using System.Threading.Tasks;
 using GrokCS;
 
-static async Task Main(string[] args)
+// Top-level statements start here
+Console.WriteLine("Starting grok...");
+if (args == null || args.Length == 0)
 {
-    // Default to Grok if no arguments or invalid command is provided
-    string commandPrefix = args.Length > 0 && args[0].ToLower() == "grok" ? "grok" : "";
-    string command = args.Length > (commandPrefix == "grok" ? 1 : 0) ? 
+    Console.WriteLine("No arguments provided. Defaulting to 'grok' with message: 'Default Grok message'");
+    await new Grok3().Execute("Default Grok message");
+    return;
+}
+Console.WriteLine($"Args: {string.Join(", ", args)}");
+
+string commandPrefix = args.Length > 0 && args[0].ToLower() == "grok" ? "grok" : "";
+string command = args.Length > (commandPrefix == "grok" ? 1 : 0) ? 
     (commandPrefix == "grok" ? args[1].ToLower() : args[0].ToLower()) : "grok";
-    string parameter = args.Length > (commandPrefix == "grok" ? 2 : 1) ? args[commandPrefix == "grok" ? 2 : 1] : null;
+string parameter = args.Length > (commandPrefix == "grok" ? 2 : 1) ? args[commandPrefix == "grok" ? 2 : 1] : null;
 
-    switch (command)
-    {
-        case "upload":
-            if (string.IsNullOrEmpty(parameter))
-            {
-                Console.WriteLine("Error: Please provide a filepath for upload (e.g., dotnet run -- upload C:\\temp\\screenshot.png)");
-                return;
-            }
-            FileInfo f = FileHelper.GetFileInfo(parameter);
-            await new Upload().Execute(f);
-            break;
-
-        case "grok":
-            if (string.IsNullOrEmpty(parameter))
-            {
-                Console.WriteLine("Error: Please provide a message for Grok (e.g., dotnet run -- grok \"Hello, Grok!\")");
-                return;
-            }
-            await new Grok3().Execute();
-            break;
-
-        case "ratelimit":
-            await new GetRateLimit().Execute();
-            break;
-
-        default:
-            await new Grok3().Execute();
-            break;
-    }
+Console.WriteLine($"Command: {command}, Parameter: {parameter}");
+if (string.IsNullOrEmpty(command))
+{
+    Console.WriteLine("No valid command provided. Defaulting to 'grok' with message: 'Default Grok message'");
+    await new Grok3().Execute("Default Grok message");
+    return;
 }
 
-async Task Grok(string message)
+switch (command)
 {
-    var app = new Grok3();
-    var result = await app.Execute(message); // Assuming Grok3.Execute accepts a message parameter
-    Console.WriteLine(result);
-}
+    case "upload":
+        if (string.IsNullOrEmpty(parameter))
+        {
+            Console.WriteLine("Error: Please provide a filepath for upload (e.g., grok upload C:\\temp\\screenshot.png)");
+            return;
+        }
+        FileInfo f = FileHelper.GetFileInfo(parameter);
+        await new Upload().Execute(f);
+        break;
 
-async Task Upload(string filePath)
-{
-    Console.WriteLine("uploading...");
-    var upload = new Upload(); // Create an instance of the Upload class
-    var file = new FileInfo(filePath);
-    string result = await upload.Execute(file);
-    Console.WriteLine(result);
-    Console.WriteLine("done.");
-}
+    case "grok":
+        if (string.IsNullOrEmpty(parameter))
+        {
+            Console.WriteLine("Error: Please provide a message for Grok (e.g., grok grok \"Hello, Grok!\")");
+            return;
+        }
+        await new Grok3().Execute(parameter); // Use the parameter as the message
+        break;
 
-async Task GetRateLimit()
-{
-    var app = new GetRateLimit();
-    var result = await app.Execute(); // Await the async method
-    Console.WriteLine(result);
+    case "ratelimit":
+        await new GetRateLimit().Execute();
+        break;
+
+    default:
+        Console.WriteLine($"Unknown command '{command}'. Defaulting to Grok with message: 'Default Grok message'");
+        await new Grok3().Execute("Default Grok message");
+        break;
 }
