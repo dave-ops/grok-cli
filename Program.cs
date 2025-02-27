@@ -21,7 +21,7 @@ async Task Upload()
 {
     Console.WriteLine("uploading...");
     var upload = new Upload();
-    var file = new FileInfo("C:\\temp\\mic.txt");
+    var file = new FileInfo("C:\\temp\\screenshot.png");
     string result = await upload.Execute(file);
     Console.WriteLine(result);
     Console.WriteLine("done.");
