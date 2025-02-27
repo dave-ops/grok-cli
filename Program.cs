@@ -6,7 +6,9 @@ using GrokCS;
 using static GrokCS.ParseGrokResponse;
 using static GrokCS.GetRateLimit;
 
+await GetRateLimit();
 await Upload();
+await Grok();
 
 async Task Grok()
 {

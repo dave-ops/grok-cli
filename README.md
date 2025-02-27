@@ -12,4 +12,14 @@ dotnet build
 dotnet run
 ```
 
+## release
+```
+dotnet run --configuration Release
+```
+
+## run
+```
+dotnet run -- arg1 arg2
+```
+
 
