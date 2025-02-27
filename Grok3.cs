@@ -10,13 +10,13 @@ namespace GrokCS
 {
     public class Grok3 {
 
-    public async Task<byte[]> Execute() 
+    public async Task<byte[]> Execute(string message = "say your name") 
         {
             using (var client = new HttpClient())
             {
                 var url = "https://grok.com/rest/app-chat/conversations/new";
 
-                var jsonPayload = @"{""temporary"":false,""modelName"":""grok-2"",""message"":""say your name"",""fileAttachments"":[],""imageAttachments"":[],""disableSearch"":false,""enableImageGeneration"":true,""returnImageBytes"":false,""returnRawGrokInXaiRequest"":false,""enableImageStreaming"":true,""imageGenerationCount"":2,""forceConcise"":false,""toolOverrides"":{},""enableSideBySide"":true,""isPreset"":false,""sendFinalMetadata"":true,""customInstructions"":"""",""deepsearchPreset"":"""",""isReasoning"":false}";
+                var jsonPayload = @"{""temporary"":false,""modelName"":""grok-2"",""message"":""{message}"",""fileAttachments"":[],""imageAttachments"":[],""disableSearch"":false,""enableImageGeneration"":true,""returnImageBytes"":false,""returnRawGrokInXaiRequest"":false,""enableImageStreaming"":true,""imageGenerationCount"":2,""forceConcise"":false,""toolOverrides"":{},""enableSideBySide"":true,""isPreset"":false,""sendFinalMetadata"":true,""customInstructions"":"""",""deepsearchPreset"":"""",""isReasoning"":false}";
                 var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
