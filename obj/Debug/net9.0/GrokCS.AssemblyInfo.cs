@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GrokCS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17ad2a6620951252fca678edc325519e5b17be31")]
 [assembly: System.Reflection.AssemblyProductAttribute("GrokCS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GrokCS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
