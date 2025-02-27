@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package grok.chat.v1;
+
+service ChatService {
+  rpc CreateConversation (CreateConversationRequest) returns (CreateConversationResponse) {}
+}
+
+message CreateConversationRequest {
+  bool temporary = 1;
+  string model_name = 2;
+  string message = 3;
+  repeated FileAttachment file_attachments = 4;
+  repeated ImageAttachment image_attachments = 5;
+  bool disable_search = 6;
+  bool enable_image_generation = 7;
+  bool return_image_bytes = 8;
+  bool return_raw_grok_in_xai_request = 9;
+  bool enable_image_streaming = 10;
+  int32 image_generation_count = 11;
+  bool force_concise = 12;
+  map<string, string> tool_overrides = 13;
+  bool enable_side_by_side = 14;
+  bool is_preset = 15;
+  bool send_final_metadata = 16;
+  string custom_instructions = 17;
+  string deepsearch_preset = 18;
+  bool is_reasoning = 19;
+}
+
+message FileAttachment {
+  string file_id = 1;
+  string file_name = 2;
+  bytes content = 3;
+}
+
+message ImageAttachment {
+  string image_id = 1;
+  string image_name = 2;
+  bytes image_data = 3;
+}
+
+message CreateConversationResponse {
+  string conversation_id = 1;
+  string response_message = 2;
+  repeated bytes image_bytes = 3;
+  map<string, string> metadata = 4;
+}
