@@ -63,14 +63,22 @@ namespace GrokCLI
                     Logger.Info($"Request body: {jsonPayload}");
 
                     var response = await client.SendAsync(request);
-
-                    // Log response details before checking status
-                    Logger.Info($"Response status: {response.StatusCode}");
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    Logger.Info($"Response content: {responseContent}");
-
                     response.EnsureSuccessStatusCode();
-                    return await response.Content.ReadAsByteArrayAsync();
+
+                    // Log response headers to understand encoding and content type
+                    Logger.Info("Content-Type: " + response.Content.Headers.ContentType);
+                    Logger.Info("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
+
+                    // Read the raw response as a byte array
+                    byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
+
+                    // Handle decompression using the reusable method
+                    string? contentEncoding = response.Content.Headers.ContentEncoding?.FirstOrDefault();
+                    responseBytes = DecompressionHelper.DecompressResponse(responseBytes, contentEncoding) ?? responseBytes;
+
+                    // Return the decompressed bytes directly (no string conversion needed)
+                    Logger.Output(Encoding.UTF8.GetString(responseBytes));
+                    return responseBytes;
                 }
                 catch (HttpRequestException ex)
                 {
