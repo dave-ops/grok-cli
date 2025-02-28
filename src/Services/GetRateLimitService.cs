@@ -5,7 +5,7 @@ using GrokCLI.Utils;
 
 namespace GrokCLI
 {
-    public class GetRateLimit
+    public class GetRateLimitService
     {
         public async Task<string> Execute()
         {
