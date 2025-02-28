@@ -1,4 +1,3 @@
-// GrokCLI/Utilities/HttpHeaders.cs
 using Microsoft.Extensions.Configuration;
 
 namespace GrokCLI.Utils
@@ -7,15 +6,8 @@ namespace GrokCLI.Utils
     {
         private static readonly Lazy<IReadOnlyDictionary<string, string>> BaseHeaders = new(() =>
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
-
-            var headers = config.GetSection("HttpHeaders:BaseHeaders")
-                .Get<Dictionary<string, string>>();
-
-            return headers ?? new Dictionary<string, string>();
+            var headers = ConfigurationHelper.GetSectionAsDictionary("HttpHeaders:BaseHeaders");
+            return headers;
         });
 
         public static IReadOnlyDictionary<string, string> RateLimitHeaders => 
@@ -29,13 +21,7 @@ namespace GrokCLI.Utils
 
         private static IReadOnlyDictionary<string, string> BuildHeaders(string sectionName)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
-
-            var specificHeaders = config.GetSection($"HttpHeaders:{sectionName}")
-                .Get<Dictionary<string, string>>() ?? new Dictionary<string, string>();
+            var specificHeaders = ConfigurationHelper.GetSectionAsDictionary($"HttpHeaders:{sectionName}");
 
             var combinedHeaders = new Dictionary<string, string>(BaseHeaders.Value);
 
