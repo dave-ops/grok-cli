@@ -89,7 +89,7 @@ public class GrokResponseRenderer : IRenderer
             }
             catch (JsonException ex)
             {
-                Console.WriteLine($"Error parsing JSON: {ex.Message}");
+                Logger.Error($"Error parsing JSON: {ex.Message}");
             }
         }
 
