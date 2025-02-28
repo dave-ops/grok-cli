@@ -1,3 +1,5 @@
+using GrokCLI.Helpers;
+
 namespace GrokCLI;
 
 public static class GrokCommand
