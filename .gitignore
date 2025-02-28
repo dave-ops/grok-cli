@@ -7,3 +7,4 @@ obj/
 scripts/
 .sonarqube/
 .scannerwork/
+.prompts/
