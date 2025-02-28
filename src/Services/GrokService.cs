@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Text;
 using GrokCLI.Helpers;
+using GrokCLI.Renderers;
 using GrokCLI.Utils;
 
 namespace GrokCLI.Services;
@@ -75,8 +76,13 @@ public class GrokService
                 string? contentEncoding = response.Content.Headers.ContentEncoding?.FirstOrDefault();
                 responseBytes = DecompressionHelper.DecompressResponse(responseBytes, contentEncoding) ?? responseBytes;
 
-                // Return the decompressed bytes directly (no string conversion needed)
-                Logger.Output(Encoding.UTF8.GetString(responseBytes));
+                // Convert bytes to string for rendering
+                string responseString = Encoding.UTF8.GetString(responseBytes);
+
+                // Render the response using GrokResponseRenderer
+                await new GrokResponseRenderer().Render(responseString);
+
+                // Return the decompressed bytes directly
                 return responseBytes;
             }
             catch (HttpRequestException ex)
