@@ -4,13 +4,14 @@ namespace GrokCLI;
 
 public static class GrokCommand
 {
-    public static async Task Execute(string? parameter)
+    public static async Task Execute(string? prompt)
     {
-        if (string.IsNullOrEmpty(parameter))
+        Logger.Info("execute");
+        if (string.IsNullOrEmpty(prompt))
         {
             Logger.Info("Error: Please provide a message for Grok (e.g., grok grok \"Hello, Grok!\")");
             return;
         }
-        await new GrokService().Execute(parameter);
+        await new GrokService().Execute(prompt);
     }
 }

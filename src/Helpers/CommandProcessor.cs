@@ -15,29 +15,25 @@ public static class CommandProcessor
 
         Logger.Info($"Args: {string.Join(", ", args)}");
         var parsedArgs = ParseArgs(args);
+        Logger.Info(parsedArgs.ToString());
         
-        await ExecuteCommand(parsedArgs.Command, parsedArgs.Parameter);
+        await ExecuteCommand(parsedArgs.cmd, parsedArgs.prompt);
     }
 
-    private static (string Command, string? Parameter) ParseArgs(string[] args)
+    private static (string cmd, string? prompt) ParseArgs(string[] args)
     {
-        string commandPrefix = args[0].ToLower() == "grok" ? "grok" : "";
-        string command = args.Length > (commandPrefix == "grok" ? 1 : 0) 
-            ? (commandPrefix == "grok" ? args[1].ToLower() : args[0].ToLower()) 
-            : "grok";
-        string? parameter = args.Length > (commandPrefix == "grok" ? 2 : 1) 
-            ? args[commandPrefix == "grok" ? 2 : 1] 
-            : null;
-
-        Logger.Info($"Command: {command}, Parameter: {parameter}");
-        return (command, parameter);
+        string cmd = args[0];
+        string prompt = args[1];
+        Logger.Info($"cmd: {cmd}, Parameter: {prompt}");
+        return (cmd, prompt);
     }
 
     private static async Task ExecuteCommand(string command, string? parameter)
     {
+        Logger.Info($"excuting... {command} {parameter}");
         if (string.IsNullOrEmpty(command))
         {
-            await ExecuteDefaultGrok();
+            Logger.Info("Command Required.");
             return;
         }
 
@@ -47,21 +43,15 @@ public static class CommandProcessor
                 await UploadCommand.Execute(parameter);
                 break;
             case "grok":
+                Logger.Info("in grok");
                 await GrokCommand.Execute(parameter);
                 break;
             case "ratelimit":
                 await RateLimitCommand.Execute();
                 break;
             default:
-                Logger.Info($"Unknown command '{command}'. Defaulting to Grok with message: 'Default Grok message'");
-                await ExecuteDefaultGrok();
+                await GrokCommand.Execute(parameter);
                 break;
         }
-    }
-
-    private static async Task ExecuteDefaultGrok()
-    {
-        Logger.Info("No valid command provided. Defaulting to 'grok' with message: 'Default Grok message'");
-        await new GrokService().Execute("Default Grok message");
     }
 }
