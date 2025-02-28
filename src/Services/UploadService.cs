@@ -57,11 +57,24 @@ public class UploadService
             return $"Error: HTTP {response.StatusCode} - {errorContent}";
         }
 
-        response.EnsureSuccessStatusCode();
-        Logger.Info("sent.");
-        Logger.Info("receiving....");
-        string responseBody = await response.Content.ReadAsStringAsync();
-        Logger.Info("received.");
-        return responseBody;
+         // Log response headers to understand encoding and content type
+        Logger.Info("Content-Type: " + response.Content.Headers.ContentType);
+        Logger.Info("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
+
+        // Read the raw response as a byte array
+        byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
+
+        // Handle decompression using the reusable method
+        string? contentEncoding = response.Content.Headers.ContentEncoding?.FirstOrDefault();
+        responseBytes = DecompressionHelper.DecompressResponse(responseBytes, contentEncoding) ?? responseBytes;
+
+        // Convert bytes to string for rendering
+        string responseString = Encoding.UTF8.GetString(responseBytes);
+
+        // Render the response using GrokResponseRenderer
+        await new UploadResponseRenderer().Render(responseString);
+
+        // Return the decompressed bytes directly
+        return responseBytes;
     }
 }
