@@ -1,10 +1,9 @@
-# grok-cs
-bin/
-obj/
-docs/
-publish/
-obj/
-scripts/
-.sonarqube/
-.scannerwork/
+# grok-cli
 .prompts/
+.scannerwork/
+.sonarqube/
+bin/
+docs/
+obj/
+publish/
+scripts/
