@@ -1,4 +1,4 @@
-using System.IO.Compression;
+sing System.IO.Compression;
 using System.Threading.Tasks;
 
 namespace GrokCLI.Decompressors
