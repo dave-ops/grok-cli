@@ -1,17 +1,15 @@
 using GrokCLI.Helpers;
+using GrokCLI.Services;
+using GrokCLI.Utils;
 
-namespace GrokCLI;
-
-public static class GrokCommand
+namespace GrokCLI.Commands;
+public class GrokCommand : ICommand
 {
-    public static async Task Execute(string? prompt)
+    public const string CommandName = "grok";
+
+    public async Task Execute(string? parameter = null)
     {
-        Logger.Info("execute");
-        if (string.IsNullOrEmpty(prompt))
-        {
-            Logger.Info("Error: Please provide a message for Grok (e.g., grok grok \"Hello, Grok!\")");
-            return;
-        }
-        await new GrokService().Execute(prompt);
+        Logger.Info($"{CommandName} command executing with parameter: {parameter}");
+        await new GrokService().Execute(parameter ?? "Default Grok message");
     }
 }
