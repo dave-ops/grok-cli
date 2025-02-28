@@ -4,15 +4,38 @@ using GrokCLI.Utils;
 
 namespace GrokCLI
 {
-    public class GrokService {
+    public class GrokService
+    {
 
-    public async Task<byte[]> Execute(string message = "say your name") 
+        public async Task<byte[]> Execute(string message = "say your name")
         {
+            Logger.Info($"grok service {message}");
             using (var client = new HttpClient())
             {
                 var url = "https://grok.com/rest/app-chat/conversations/new";
 
-                var jsonPayload = @"{""temporary"":false,""modelName"":""grok-latest"",""message"":""{message}"",""fileAttachments"":[],""imageAttachments"":[],""disableSearch"":false,""enableImageGeneration"":true,""returnImageBytes"":false,""returnRawGrokInXaiRequest"":false,""enableImageStreaming"":true,""imageGenerationCount"":2,""forceConcise"":false,""toolOverrides"":{},""enableSideBySide"":true,""isPreset"":false,""sendFinalMetadata"":true,""customInstructions"":"""",""deepsearchPreset"":"""",""isReasoning"":false}";
+                var jsonPayload = @"{
+                    ""temporary"":false,
+                    ""modelName"":""grok-latest"",
+                    ""message"":""{message}"",
+                    ""fileAttachments"":[],
+                    ""imageAttachments"":[],
+                    ""disableSearch"":false,
+                    ""enableImageGeneration"":true,
+                    ""returnImageBytes"":false,
+                    ""returnRawGrokInXaiRequest"":false,
+                    ""enableImageStreaming"":true,
+                    ""imageGenerationCount"":2,
+                    ""forceConcise"":false,
+                    ""toolOverrides"":{},
+                    ""enableSideBySide"":true,
+                    ""isPreset"":false,
+                    ""sendFinalMetadata"":true,
+                    ""customInstructions"":"""",
+                    ""deepsearchPreset"":"""",
+                    ""isReasoning"":false
+                }";
+                
                 var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
@@ -36,5 +59,5 @@ namespace GrokCLI
             }
         }
     }
-   
+
 }
