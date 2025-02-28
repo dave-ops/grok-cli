@@ -4,11 +4,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GrokCLI.Helpers;
 
 public class UploadResponseRenderer : IRenderer
 {
     public async Task Render(string jsonInput)
     {
+        Logger.Info(jsonInput);
         try
         {
             JObject obj = JObject.Parse(jsonInput);
@@ -28,7 +30,7 @@ public class UploadResponseRenderer : IRenderer
         }
         catch (JsonException ex)
         {
-            Console.WriteLine($"Error parsing JSON: {ex.Message}");
+            Logger.Error($"Error parsing JSON: {ex.Message}");
         }
     }
 }

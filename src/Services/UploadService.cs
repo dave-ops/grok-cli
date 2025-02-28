@@ -15,6 +15,7 @@ using GrokCLI.Renderers;
 public class UploadService
 {
     private static readonly HttpClient client = new HttpClient();
+    private static readonly string url = "https://grok.com/rest/app-chat/upload-file";
 
     public async Task<byte[]> Execute(FileInfo file)
     {
@@ -43,10 +44,8 @@ public class UploadService
         var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
         // Set up the request
-        var request = new HttpRequestMessage
+        var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
-            Method = HttpMethod.Post,
-            RequestUri = new Uri("https://grok.com/rest/app-chat/upload-file"),
             Content = content
         };
 
@@ -55,21 +54,17 @@ public class UploadService
             request.Headers.Add(header.Key, header.Value);
         }
 
-        // Send the request and get response
-        Logger.Info("sending...");
-        HttpResponseMessage response = await client.SendAsync(request);
-        
-        // Check if the response is successful before calling EnsureSuccessStatusCode
-        if (!response.IsSuccessStatusCode)
-        {
-            string errorContent = await response.Content.ReadAsStringAsync();
-            Logger.Error($"Error: HTTP {response.StatusCode} - {errorContent}");
-            throw new Exception("not successful"); 
-        }
+        Logger.Info($"Sending request to {url}");
+        Logger.Info($"Request headers: {request.Headers}");
+        Logger.Info($"Request body: {jsonPayload}");
 
+        var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
-        Logger.Info("sent.");
-        Logger.Info("receiving....");
+
+        // Log response headers to understand encoding and content type
+        Logger.Info("Content-Type: " + response.Content.Headers.ContentType);
+        Logger.Info("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
+
         // Read the raw response as a byte array
         byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
 
@@ -81,7 +76,7 @@ public class UploadService
         string responseString = Encoding.UTF8.GetString(responseBytes);
 
         // Render the response using GrokResponseRenderer
-        await new GrokResponseRenderer().Render(responseString);
+        await new UploadResponseRenderer().Render(responseString);
 
         // Return the decompressed bytes directly
         return responseBytes;
