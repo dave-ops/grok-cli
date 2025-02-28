@@ -1,3 +1,6 @@
 # grok-cs
 bin/
 obj/
+docs/
+publish/
+obj/
