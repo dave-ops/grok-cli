@@ -1,11 +1,13 @@
+namespace GrokCLI.Renderers;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace GrokCLI.Renderers;
-public class GrokResponseRenderer
+public class GrokResponseRenderer : IRenderer
 {
-    public static void RenderResponses(string jsonInput)
+    public async Task Render(string jsonInput)
     {
         // Split the input into individual JSON objects (assuming newline-separated JSON)
         string[] jsonObjects = jsonInput.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);

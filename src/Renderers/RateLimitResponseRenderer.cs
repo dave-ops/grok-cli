@@ -3,10 +3,11 @@ namespace GrokCLI.Renderers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-public class RateLimitResponseRenderer
+public class RateLimitResponseRenderer : IRenderer
 {
-    public static void RenderResponse(string jsonInput)
+    public async Task Render(string jsonInput)
     {
         try
         {
