@@ -9,3 +9,4 @@ publish/
 scripts/
 *.bak
 *.orig
+appsettings.json
