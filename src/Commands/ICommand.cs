@@ -1,6 +1,7 @@
-namespace GrokCLI.Helpers;
+namespace GrokCLI.Commands;
 
 public interface ICommand
 {
     Task Execute(string? parameter = null);
 }
+

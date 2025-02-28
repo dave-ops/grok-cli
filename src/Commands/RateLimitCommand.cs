@@ -1,9 +1,14 @@
-namespace GrokCLI;
+using GrokCLI.Services;
+using GrokCLI.Utils;
 
-public static class RateLimitCommand
+namespace GrokCLI.Helpers
 {
-    public static async Task Execute()
+    public class RateLimitCommand : ICommand
     {
-        await new GetRateLimitService().Execute();
+        public async Task Execute(string? parameter = null)
+        {
+            Logger.Info("RateLimit command executing...");
+            await new GetRateLimitService().Execute();
+        }
     }
 }

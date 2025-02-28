@@ -1,25 +1,30 @@
-using GrokCLI.Helpers;
+using System.IO;
+using GrokCLI.Services;
+using GrokCLI.Utils;
 
-namespace GrokCLI;
-
-public static class UploadCommand
+namespace GrokCLI.Helpers
 {
-    public static async Task Execute(string? parameter)
+    public class UploadCommand : ICommand
     {
-        if (string.IsNullOrEmpty(parameter))
+        public async Task Execute(string? parameter = null)
         {
-            Logger.Info("Error: Please provide a filepath for upload (e.g., grok upload C:\\temp\\screenshot.png)");
-            return;
-        }
-
-        FileInfo? fileInfo = FileHelper.GetFileInfo(parameter);
-        if (fileInfo != null)
-        {
-            _ = await new UploadService().Execute(fileInfo);
-        }
-        else
-        {
-            Logger.Info($"File not found: {parameter}");
+            if (parameter != null)
+            {
+                FileInfo file = new FileInfo(parameter);
+                if (file.Exists)
+                {
+                    Logger.Info($"Upload command executing with file: {file.Name}");
+                    await new UploadService().Execute(file);
+                }
+                else
+                {
+                    Logger.Error($"File not found: {parameter}");
+                }
+            }
+            else
+            {
+                Logger.Error("No file specified for upload");
+            }
         }
     }
 }
