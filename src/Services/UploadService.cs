@@ -22,7 +22,7 @@ public class UploadService
         var jsonPayload = new
         {
             fileName = file.Name,
-            fileMimeType = GetMimeType(file.Extension),
+            fileMimeType = MimeHelper.GetMimeType(file.Extension),
             content = base64Content
         };
 
@@ -60,21 +60,5 @@ public class UploadService
         string responseBody = await response.Content.ReadAsStringAsync();
         Logger.Info("received.");
         return responseBody;
-    }
-
-    private string GetMimeType(string extension)
-    {
-        switch (extension.ToLower())
-        {
-            case ".png":
-                return "image/png";
-            case ".jpg":
-            case ".jpeg":
-                return "image/jpeg";
-            case ".pdf":
-                return "application/pdf";
-            default:
-                return "application/octet-stream";
-        }
     }
 }
