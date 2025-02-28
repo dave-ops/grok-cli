@@ -33,6 +33,7 @@ public static class Logger
     private static ConsoleColor _errorColor = ConsoleColor.DarkRed;
     private static ConsoleColor _debugColor = ConsoleColor.Blue;
     private static ConsoleColor _messageColor = ConsoleColor.DarkCyan;
+    private static ConsoleColor _grokColor = ConsoleColor.DarkGray;
     private static string _theme = "light"; // Default theme
 
     static Logger()
@@ -67,18 +68,21 @@ public static class Logger
                 _errorColor = ConsoleColor.DarkRed;
                 _debugColor = ConsoleColor.Blue;
                 _messageColor = ConsoleColor.DarkCyan;
+                _grokColor = ConsoleColor.DarkGray;
                 break;
             case "dark":
                 _infoColor = ConsoleColor.Gray;
                 _errorColor = ConsoleColor.Red;
                 _debugColor = ConsoleColor.Cyan;
                 _messageColor = ConsoleColor.DarkCyan;
+                _grokColor = ConsoleColor.DarkGray;
                 break;
             default:
                 _infoColor = ConsoleColor.White;
                 _errorColor = ConsoleColor.DarkRed;
                 _debugColor = ConsoleColor.Blue;
                 _messageColor = ConsoleColor.DarkCyan;
+                _grokColor = ConsoleColor.DarkGray;
                 break;
         }
     }
@@ -145,12 +149,16 @@ public static class Logger
 
     public static void Output(string message)
     {
+        Console.ForegroundColor = _grokColor;
         Console.WriteLine(message);
+        Console.ResetColor();
     }
 
     public static void Output(string format, params object[] args)
     {
+        Console.ForegroundColor = _grokColor;
         Console.WriteLine($"{format}", args);
+        Console.ResetColor();
     }
 
     #region Configuration-Based Logging (Optional Integration with LoggingHelper)
