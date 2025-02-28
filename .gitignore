@@ -6,3 +6,4 @@ publish/
 obj/
 scripts/
 .sonarqube/
+.scannerwork/
