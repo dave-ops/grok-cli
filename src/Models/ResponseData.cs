@@ -1,6 +1,4 @@
-using GrokCLI.Models;
-
-namespace GrokCS.Models {
+namespace GrokCLI.Models {
 
     public class ResponseData
     {
