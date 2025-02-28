@@ -2,29 +2,29 @@ using System.IO;
 using GrokCLI.Services;
 using GrokCLI.Utils;
 
-namespace GrokCLI.Helpers
+namespace GrokCLI.Commands;
+public class UploadCommand : ICommand
 {
-    public class UploadCommand : ICommand
+    public const string CommandName = "upload";
+
+    public async Task Execute(string? parameter = null)
     {
-        public async Task Execute(string? parameter = null)
+        if (parameter != null)
         {
-            if (parameter != null)
+            FileInfo file = new FileInfo(parameter);
+            if (file.Exists)
             {
-                FileInfo file = new FileInfo(parameter);
-                if (file.Exists)
-                {
-                    Logger.Info($"Upload command executing with file: {file.Name}");
-                    await new UploadService().Execute(file);
-                }
-                else
-                {
-                    Logger.Error($"File not found: {parameter}");
-                }
+                Logger.Info($"{CommandName} command executing with file: {file.Name}");
+                await new UploadService().Execute(file);
             }
             else
             {
-                Logger.Error("No file specified for upload");
+                Logger.Error($"File not found: {parameter}");
             }
+        }
+        else
+        {
+            Logger.Error("No file specified for upload");
         }
     }
 }
