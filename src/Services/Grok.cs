@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GrokCLI
 {
-    public class Grok3 {
+    public class Grok {
 
     public async Task<byte[]> Execute(string message = "say your name") 
         {
@@ -41,14 +41,9 @@ namespace GrokCLI
                 catch (HttpRequestException ex)
                 {
                     Console.WriteLine($"Error: {ex.Message}");
-                    throw ex;
+                    throw;
                 }
             }
-        }
-
-        public static async Task Main(string[] args)
-        {
-
         }
     }
    

@@ -9,7 +9,7 @@ Console.WriteLine("Starting grok...");
 if (args == null || args.Length == 0)
 {
     Console.WriteLine("No arguments provided. Defaulting to 'grok' with message: 'Default Grok message'");
-    await new Grok3().Execute("Default Grok message");
+    await new Grok().Execute("Default Grok message");
     return;
 }
 Console.WriteLine($"Args: {string.Join(", ", args)}");
@@ -23,7 +23,7 @@ Console.WriteLine($"Command: {command}, Parameter: {parameter}");
 if (string.IsNullOrEmpty(command))
 {
     Console.WriteLine("No valid command provided. Defaulting to 'grok' with message: 'Default Grok message'");
-    await new Grok3().Execute("Default Grok message");
+    await new Grok().Execute("Default Grok message");
     return;
 }
 
@@ -45,7 +45,7 @@ switch (command)
             Console.WriteLine("Error: Please provide a message for Grok (e.g., grok grok \"Hello, Grok!\")");
             return;
         }
-        await new Grok3().Execute(parameter); // Use the parameter as the message
+        await new Grok().Execute(parameter); // Use the parameter as the message
         break;
 
     case "ratelimit":
@@ -68,6 +68,6 @@ switch (command)
 
     default:
         Console.WriteLine($"Unknown command '{command}'. Defaulting to Grok with message: 'Default Grok message'");
-        await new Grok3().Execute("Default Grok message");
+        await new Grok().Execute("Default Grok message");
         break;
 }
