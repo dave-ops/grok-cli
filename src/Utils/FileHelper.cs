@@ -11,7 +11,7 @@ namespace GrokCLI {
         /// <param name="filePath">The path to the file.</param>
         /// <returns>A FileInfo object representing the file, or null if the file path is invalid or the file does not exist.</returns>
         /// <exception cref="ArgumentException">Thrown when the file path is null, empty, or whitespace.</exception>
-        public static FileInfo GetFileInfo(string filePath)
+        public static FileInfo? GetFileInfo(string filePath)
         {
             // Validate the file path
             if (string.IsNullOrWhiteSpace(filePath))
