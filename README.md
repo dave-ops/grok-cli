@@ -1,2 +1,2 @@
 # GROK-CLI
-The Grok CLI 
+coming soon
