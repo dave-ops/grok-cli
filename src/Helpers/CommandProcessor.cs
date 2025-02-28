@@ -9,7 +9,7 @@ public static class CommandProcessor
         if (args == null || args.Length == 0)
         {
             Logger.Info("No arguments provided. Defaulting to 'grok' with message: 'Default Grok message'");
-            await new Grok().Execute("Default Grok message");
+            await new GrokService().Execute("Default Grok message");
             return;
         }
 
@@ -65,6 +65,6 @@ public static class CommandProcessor
     private static async Task ExecuteDefaultGrok()
     {
         Logger.Info("No valid command provided. Defaulting to 'grok' with message: 'Default Grok message'");
-        await new Grok().Execute("Default Grok message");
+        await new GrokService().Execute("Default Grok message");
     }
 }

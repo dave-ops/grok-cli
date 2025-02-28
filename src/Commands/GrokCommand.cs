@@ -11,6 +11,6 @@ public static class GrokCommand
             Logger.Info("Error: Please provide a message for Grok (e.g., grok grok \"Hello, Grok!\")");
             return;
         }
-        await new Grok().Execute(parameter);
+        await new GrokService().Execute(parameter);
     }
 }
