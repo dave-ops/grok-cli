@@ -3,8 +3,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using GrokCLI.Utils;
+using GrokCLI.Helpers;
 
-public class Upload
+public class UploadService
 {
     private static readonly HttpClient client = new HttpClient();
 

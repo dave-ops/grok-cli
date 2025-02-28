@@ -13,7 +13,7 @@ public static class UploadCommand
         FileInfo? fileInfo = FileHelper.GetFileInfo(parameter);
         if (fileInfo != null)
         {
-            _ = await new Upload().Execute(fileInfo);
+            _ = await new UploadService().Execute(fileInfo);
         }
         else
         {
