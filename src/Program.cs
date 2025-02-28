@@ -17,7 +17,7 @@ Console.WriteLine($"Args: {string.Join(", ", args)}");
 string commandPrefix = args.Length > 0 && args[0].ToLower() == "grok" ? "grok" : "";
 string command = args.Length > (commandPrefix == "grok" ? 1 : 0) ? 
     (commandPrefix == "grok" ? args[1].ToLower() : args[0].ToLower()) : "grok";
-string parameter = args.Length > (commandPrefix == "grok" ? 2 : 1) ? args[commandPrefix == "grok" ? 2 : 1] : null;
+string? parameter = args.Length > (commandPrefix == "grok" ? 2 : 1) ? args[commandPrefix == "grok" ? 2 : 1] : null;
 
 Console.WriteLine($"Command: {command}, Parameter: {parameter}");
 if (string.IsNullOrEmpty(command))
@@ -35,8 +35,12 @@ switch (command)
             Console.WriteLine("Error: Please provide a filepath for upload (e.g., grok upload C:\\temp\\screenshot.png)");
             return;
         }
-        FileInfo f = FileHelper.GetFileInfo(parameter);
-        await new Upload().Execute(f);
+        FileInfo? f = FileHelper.GetFileInfo(parameter);
+        if (f is FileInfo fileInfo) {
+            _ = await new Upload().Execute(fileInfo);
+        } else {
+            Console.WriteLine($"File not found: {parameter}");
+        }
         break;
 
     case "grok":

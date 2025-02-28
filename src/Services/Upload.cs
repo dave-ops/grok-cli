@@ -9,6 +9,7 @@ public class Upload
 
     public async Task<string> Execute(FileInfo file)
     {
+
         Console.WriteLine("executing...");
 
         // Read file content and convert to base64
