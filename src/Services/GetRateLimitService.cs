@@ -1,12 +1,26 @@
 using System.Text;
-using System.IO.Compression;
+using System.Net.Http;
 using GrokCLI.Helpers;
 using GrokCLI.Utils;
+using GrokCLI.Decompressors;
 
 namespace GrokCLI
 {
     public class GetRateLimitService
     {
+        private readonly IDecompressor[] _decompressors;
+
+        public GetRateLimitService()
+        {
+            _decompressors = new IDecompressor[]
+            {
+                new GzipDecompressor(),
+                new DeflateDecompressor(),
+                new BrotliDecompressor(),
+                new ZstdDecompressor()
+            };
+        }
+
         public async Task<string> Execute()
         {
             using (var client = new HttpClient())
@@ -36,41 +50,19 @@ namespace GrokCLI
                     string? contentEncoding = response.Content.Headers.ContentEncoding.FirstOrDefault();
                     Logger.Info($"Decompressing response with encoding: {contentEncoding}");
 
-                    if (contentEncoding?.Contains("gzip", StringComparison.OrdinalIgnoreCase) == true)
+                    var decompressor = _decompressors.FirstOrDefault(d => d.SupportsEncoding(contentEncoding));
+                    if (decompressor != null)
                     {
-                        using (var memoryStream = new MemoryStream(responseBytes))
-                        using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                        using (var decompressedStream = new MemoryStream())
+                        responseBytes = await decompressor.DecompressAsync(responseBytes);
+                        if (responseBytes == null) // Handle unsupported compression (e.g., zstd)
                         {
-                            await gzipStream.CopyToAsync(decompressedStream);
-                            responseBytes = decompressedStream.ToArray();
+                            return $"Unsupported compression: {contentEncoding}";
                         }
                     }
-                    else if (contentEncoding?.Contains("deflate", StringComparison.OrdinalIgnoreCase) == true)
+                    else
                     {
-                        using (var memoryStream = new MemoryStream(responseBytes))
-                        using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress))
-                        using (var decompressedStream = new MemoryStream())
-                        {
-                            await deflateStream.CopyToAsync(decompressedStream);
-                            responseBytes = decompressedStream.ToArray();
-                        }
-                    }
-                    else if (contentEncoding?.Contains("br", StringComparison.OrdinalIgnoreCase) == true)
-                    {
-                        using (var memoryStream = new MemoryStream(responseBytes))
-                        using (var brotliStream = new BrotliStream(memoryStream, CompressionMode.Decompress))
-                        using (var decompressedStream = new MemoryStream())
-                        {
-                            await brotliStream.CopyToAsync(decompressedStream);
-                            responseBytes = decompressedStream.ToArray();
-                            Logger.Info(responseBytes.Length.ToString() + "");
-                        }
-                    }
-                    else if (contentEncoding?.Contains("zstd", StringComparison.OrdinalIgnoreCase) == true)
-                    {
-                        Logger.Info("Zstandard (zstd) compression detected, but not supported in this code.");
-                        return "Unsupported compression: zstd";
+                        Logger.Info($"No decompressor found for encoding: {contentEncoding}");
+                        return $"Unknown compression: {contentEncoding}";
                     }
                 }
 
