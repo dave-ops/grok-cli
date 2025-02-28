@@ -5,14 +5,18 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using GrokCLI.Decompressors;
 using GrokCLI.Utils;
 using GrokCLI.Helpers;
+using GrokCLI.Renderers;
 
 public class UploadService
 {
     private static readonly HttpClient client = new HttpClient();
 
-    public async Task<string> Execute(FileInfo file)
+    public async Task<byte[]> Execute(FileInfo file)
     {
         Logger.Info($"executing... uploading {file.Name}");
 
@@ -25,7 +29,6 @@ public class UploadService
         if (fileBytes == null)
         {
             Logger.Error($"File processing failed for {file.Name}. Upload aborted.");
-            return $"Error: File processing failed for {file.Name}";
         }
 
         // Create JSON payload
@@ -61,15 +64,27 @@ public class UploadService
         {
             string errorContent = await response.Content.ReadAsStringAsync();
             Logger.Error($"Error: HTTP {response.StatusCode} - {errorContent}");
-            return $"Error: HTTP {response.StatusCode} - {errorContent}";
+            throw new Exception("not successful"); 
         }
 
         response.EnsureSuccessStatusCode();
         Logger.Info("sent.");
         Logger.Info("receiving....");
-        string responseBody = await response.Content.ReadAsStringAsync();
-        Logger.Info("received.");
-        return responseBody;
+        // Read the raw response as a byte array
+        byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
+
+        // Handle decompression using the reusable method
+        string? contentEncoding = response.Content.Headers.ContentEncoding?.FirstOrDefault();
+        responseBytes = DecompressionHelper.DecompressResponse(responseBytes, contentEncoding) ?? responseBytes;
+
+        // Convert bytes to string for rendering
+        string responseString = Encoding.UTF8.GetString(responseBytes);
+
+        // Render the response using GrokResponseRenderer
+        await new GrokResponseRenderer().Render(responseString);
+
+        // Return the decompressed bytes directly
+        return responseBytes;
     }
 
     private async Task<(byte[]?, string, string)> ProcessFile(FileInfo file)
@@ -141,6 +156,41 @@ public class UploadService
         {
             Logger.Error($"Error converting {fileName} to image: {ex.Message}");
             return null;
+        }
+    }
+
+    private string CleanResponse(string response)
+    {
+        // Remove leading/trailing whitespace and check if it starts with '!'
+        if (string.IsNullOrEmpty(response))
+            return string.Empty;
+
+        string trimmed = response.Trim();
+        if (trimmed.StartsWith("!"))
+        {
+            // Try to extract JSON if it's wrapped or preceded by non-JSON content
+            int jsonStart = trimmed.IndexOf('{');
+            if (jsonStart >= 0)
+            {
+                trimmed = trimmed.Substring(jsonStart);
+            }
+            else
+            {
+                Logger.Error($"Non-JSON response detected: {trimmed}");
+                return string.Empty;
+            }
+        }
+
+        // Validate if the trimmed response is valid JSON
+        try
+        {
+            JObject.Parse(trimmed);
+            return trimmed;
+        }
+        catch (JsonException)
+        {
+            Logger.Error($"Invalid JSON response after cleaning: {trimmed}");
+            return string.Empty;
         }
     }
 }
