@@ -1,57 +1,47 @@
 using GrokCLI.Helpers;
 
-namespace GrokCLI;
-
-public static class CommandProcessor
+namespace GrokCLI
 {
-    public static async Task ProcessArgs(string[]? args)
+    public class CommandProcessor
     {
-        if (args == null || args.Length == 0)
+        public void ParseArgs(string[] args)
         {
-            Logger.Info("No arguments provided. Defaulting to 'grok' with message: 'Default Grok message'");
-            await new GrokService().Execute("Default Grok message");
-            return;
+            Logger.Info("Args: " + (args?.Length > 0 ? string.Join(", ", args) : "No arguments provided"));
+
+            if (args == null || args.Length == 0)
+            {
+                Logger.Error("No command provided.");
+                return;
+            }
+
+            string command = args[0].ToLowerInvariant(); // Safely access first argument
+
+            switch (command)
+            {
+                case "ratelimit":
+                    // Handle the ratelimit command
+                    var rateLimitService = new GetRateLimitService();
+                    rateLimitService.Execute().Wait(); // Or use async/await properly in a real app
+                    break;
+
+                // Add other commands as needed
+                default:
+                    Logger.Error($"Unknown command: {command}");
+                    break;
+            }
         }
 
-        Logger.Info($"Args: {string.Join(", ", args)}");
-        var parsedArgs = ParseArgs(args);
-        Logger.Info(parsedArgs.ToString());
-        
-        await ExecuteCommand(parsedArgs.cmd, parsedArgs.prompt);
-    }
-
-    private static (string cmd, string? prompt) ParseArgs(string[] args)
-    {
-        string cmd = args[0];
-        string prompt = args[1];
-        Logger.Info($"cmd: {cmd}, Parameter: {prompt}");
-        return (cmd, prompt);
-    }
-
-    private static async Task ExecuteCommand(string command, string? parameter)
-    {
-        Logger.Info($"excuting... {command} {parameter}");
-        if (string.IsNullOrEmpty(command))
+        public void ProcessArgs(string[] args)
         {
-            Logger.Info("Command Required.");
-            return;
-        }
-
-        switch (command)
-        {
-            case "upload":
-                await UploadCommand.Execute(parameter);
-                break;
-            case "grok":
-                Logger.Info("in grok");
-                await GrokCommand.Execute(parameter);
-                break;
-            case "ratelimit":
-                await RateLimitCommand.Execute();
-                break;
-            default:
-                await GrokCommand.Execute(parameter);
-                break;
+            try
+            {
+                ParseArgs(args);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error processing arguments: {ex.Message}");
+                throw;
+            }
         }
     }
 }
