@@ -6,67 +6,45 @@ namespace GrokCLI.Helpers
 {
     public static class Logger
     {
-        /// <summary>
-        /// Writes a message to the console.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
         public static void Log(string message)
         {
             Console.WriteLine(message);
         }
 
-        /// <summary>
-        /// Writes a formatted message to the console.
-        /// </summary>
-        /// <param name="format">A composite format string.</param>
-        /// <param name="args">An array of objects to write using the format.</param>
         public static void Log(string format, params object[] args)
         {
             Console.WriteLine(format, args);
         }
 
-        /// <summary>
-        /// Writes an error message to the console with "[ERROR]" prefix.
-        /// </summary>
-        /// <param name="message">The error message to log.</param>
         public static void Error(string message)
         {
-            Console.WriteLine($"[ERROR] {message}");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.Write("[ERROR]");
+            Console.ResetColor();
+            Console.WriteLine($" {message}");
         }
-
-        /// <summary>
-        /// Writes an informational message to the console with "[INFO]" prefix.
-        /// </summary>
-        /// <param name="message">The informational message to log.</param>
+        
         public static void Info(string message)
         {
-            Console.WriteLine($"[INFO] {message}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("[INFO]");
+            Console.ResetColor();
+            Console.WriteLine($" {message}");
         }
 
-        /// <summary>
-        /// Writes a formatted informational message to the console with "[INFO]" prefix.
-        /// </summary>
-        /// <param name="format">A composite format string.</param>
-        /// <param name="args">An array of objects to write using the format.</param>
         public static void Info(string format, params object[] args)
         {
-            Console.WriteLine($"[INFO] {format}", args);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("[INFO]");
+            Console.ResetColor();
+            Console.WriteLine($" {string.Format(format, args)}");
         }
 
-        /// <summary>
-        /// Writes a raw message to the console as-is.
-        /// </summary>
-        /// <param name="message">The message to out.</param>
         public static void Output(string message)
         {
             Console.WriteLine(message);
         }
 
-        /// <summary>
-        /// Writes a raw message to the console as-is.
-        /// </summary>
-        /// <param name="format">A composite format string.</param>
-        /// <param name="args">An array of objects to write using the format.</param>
         public static void Output(string format, params object[] args)
         {
             Console.WriteLine($"{format}", args);
@@ -90,11 +68,6 @@ namespace GrokCLI.Helpers
             return settings.TryGetValue("Format", out string? format) ? format : "[{Level}] {Message}";
         }
 
-        /// <summary>
-        /// Writes a configurable message to the configured output (console and/or file) based on log level.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        /// <param name="level">The log level (e.g., "Info", "Error") to determine if the message should be logged.</param>
         public static void ConfigurableLog(string message, string level = "Info")
         {
             if (ShouldLog(level))
@@ -104,12 +77,6 @@ namespace GrokCLI.Helpers
             }
         }
 
-        /// <summary>
-        /// Writes a configurable formatted message to the configured output based on log level.
-        /// </summary>
-        /// <param name="format">A composite format string.</param>
-        /// <param name="level">The log level (e.g., "Info", "Error") to determine if the message should be logged.</param>
-        /// <param name="args">An array of objects to write using the format.</param>
         public static void ConfigurableLog(string format, string level, params object[] args)
         {
             if (ShouldLog(level))
@@ -119,39 +86,21 @@ namespace GrokCLI.Helpers
             }
         }
 
-        /// <summary>
-        /// Writes a configurable error message to the configured output with dynamic formatting.
-        /// </summary>
-        /// <param name="message">The error message to log.</param>
         public static void ConfigurableError(string message)
         {
             ConfigurableLog(message, "Error");
         }
 
-        /// <summary>
-        /// Writes a configurable formatted error message to the configured output.
-        /// </summary>
-        /// <param name="format">A composite format string.</param>
-        /// <param name="args">An array of objects to write using the format.</param>
         public static void ConfigurableError(string format, params object[] args)
         {
             ConfigurableLog(format, "Error", args);
         }
 
-        /// <summary>
-        /// Writes a configurable informational message to the configured output with dynamic formatting.
-        /// </summary>
-        /// <param name="message">The informational message to log.</param>
         public static void ConfigurableInfo(string message)
         {
             ConfigurableLog(message, "Info");
         }
 
-        /// <summary>
-        /// Writes a configurable formatted informational message to the configured output.
-        /// </summary>
-        /// <param name="format">A composite format string.</param>
-        /// <param name="args">An array of objects to write using the format.</param>
         public static void ConfigurableInfo(string format, params object[] args)
         {
             ConfigurableLog(format, "Info", args);
@@ -162,7 +111,8 @@ namespace GrokCLI.Helpers
             string currentLevel = _logLevel.ToLowerInvariant();
             string checkLevel = level.ToLowerInvariant();
 
-            // Simple log level comparison (you can expand this with a proper hierarchy: Trace < Debug < Info < Warning < Error < Critical)
+            // Simple log level comparison (you can expand this with a proper 
+            // hierarchy: Trace < Debug < Info < Warning < Error < Critical)
             if (currentLevel == "debug" || currentLevel == "trace")
                 return true;
             if (currentLevel == "info" && (checkLevel == "info" || checkLevel == "error"))
