@@ -1,11 +1,62 @@
 using GrokCLI.Utils;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 
 namespace GrokCLI.Helpers
 {
     public static class Logger
     {
+        private static ConsoleColor _infoColor = ConsoleColor.White;
+        private static ConsoleColor _errorColor = ConsoleColor.DarkRed;
+        private static ConsoleColor _debugColor = ConsoleColor.Blue;
+        private static string _theme = "light"; // Default theme
+
+        static Logger()
+        {
+            LoadThemeFromConfig();
+        }
+
+        private static void LoadThemeFromConfig()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            _theme = configuration["Logging:Theme"] ?? "light";
+            SetThemeColors(_theme);
+        }
+
+        public static void SetTheme(string theme)
+        {
+            _theme = theme.ToLowerInvariant();
+            SetThemeColors(_theme);
+        }
+
+        private static void SetThemeColors(string theme)
+        {
+            switch (theme)
+            {
+                case "light":
+                    _infoColor = ConsoleColor.White;
+                    _errorColor = ConsoleColor.DarkRed;
+                    _debugColor = ConsoleColor.Blue;
+                    break;
+                case "dark":
+                    _infoColor = ConsoleColor.Gray;
+                    _errorColor = ConsoleColor.Red;
+                    _debugColor = ConsoleColor.Cyan;
+                    break;
+                default:
+                    _infoColor = ConsoleColor.White;
+                    _errorColor = ConsoleColor.DarkRed;
+                    _debugColor = ConsoleColor.Blue;
+                    break;
+            }
+        }
+
         public static void Log(string message)
         {
             Console.WriteLine(message);
@@ -18,7 +69,7 @@ namespace GrokCLI.Helpers
 
         public static void Error(string message)
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = _errorColor;
             Console.Write("[ERROR]");
             Console.ResetColor();
             Console.WriteLine($" {message}");
@@ -26,7 +77,7 @@ namespace GrokCLI.Helpers
         
         public static void Debug(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = _debugColor;
             Console.Write("[DEBU]");
             Console.ResetColor();
             Console.WriteLine($" {message}");
@@ -34,7 +85,7 @@ namespace GrokCLI.Helpers
 
         public static void Debug(string format, params object[] args)
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = _debugColor;
             Console.Write("[DEBU]");
             Console.ResetColor();
             Console.WriteLine($" {string.Format(format, args)}");
@@ -42,7 +93,7 @@ namespace GrokCLI.Helpers
 
         public static void Info(string message)
         {
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = _infoColor;
             Console.Write("[INFO]");
             Console.ResetColor();
             Console.WriteLine($" {message}");
@@ -50,7 +101,7 @@ namespace GrokCLI.Helpers
 
         public static void Info(string format, params object[] args)
         {
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = _infoColor;
             Console.Write("[INFO]");
             Console.ResetColor();
             Console.WriteLine($" {string.Format(format, args)}");
@@ -127,8 +178,6 @@ namespace GrokCLI.Helpers
             string currentLevel = _logLevel.ToLowerInvariant();
             string checkLevel = level.ToLowerInvariant();
 
-            // Simple log level comparison (you can expand this with a proper 
-            // hierarchy: Trace < Debug < Info < Warning < Error < Critical)
             if (currentLevel == "debug" || currentLevel == "trace")
                 return true;
             if (currentLevel == "info" && (checkLevel == "info" || checkLevel == "error"))
@@ -141,10 +190,8 @@ namespace GrokCLI.Helpers
 
         private static void WriteToOutput(string message)
         {
-            // Output to console (always)
             Console.WriteLine(message);
 
-            // Output to file if configured
             if (!string.IsNullOrEmpty(_logPath))
             {
                 try
