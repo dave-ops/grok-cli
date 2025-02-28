@@ -52,9 +52,6 @@ public static class CommandProcessor
             case "ratelimit":
                 await RateLimitCommand.Execute();
                 break;
-            case "preview":
-                await PreviewCommand.Execute();
-                break;
             default:
                 Logger.Info($"Unknown command '{command}'. Defaulting to Grok with message: 'Default Grok message'");
                 await ExecuteDefaultGrok();
