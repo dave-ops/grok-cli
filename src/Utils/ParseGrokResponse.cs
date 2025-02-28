@@ -4,26 +4,6 @@ using System.Text;
 
 namespace GrokCLI.Models
 {
-    public class Result
-    {
-        public Conversation? conversation { get; set; }
-        public ResponseData? response { get; set; }
-        public TokenResponse? token { get; set; }
-        public FinalMetadata? finalMetadata { get; set; }
-        public ModelResponse? modelResponse { get; set; }
-        public NewTitle? title { get; set; }
-    }
-
-    public class NewTitle
-    {
-        public string? newTitle { get; set; }
-    }
-
-    public class GrokResponse
-    {
-        public Result? result { get; set; }
-    }
-
     public static class ParseGrokResponse
     {
         public static string ParseResponse(byte[] responseBytes)
