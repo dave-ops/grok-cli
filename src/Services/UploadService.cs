@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using GrokCLI.Utils;
 using GrokCLI.Helpers;
 
-namespace GrokCLI.Services;
-
 public class UploadService
 {
     private static readonly HttpClient client = new HttpClient();
@@ -21,10 +19,7 @@ public class UploadService
 
         // Determine the correct MIME type for the file
         string mimeType = MimeHelper.GetMimeType(file.Extension) ?? "text/plain"; // Default to text/plain if unknown
-        if (file.Extension.Equals(".md", StringComparison.OrdinalIgnoreCase))
-        {
-            mimeType = "text/markdown"; // Explicitly set .md files to text/markdown if the API prefers this
-        }
+        Logger.Info($"Detected MIME type for {file.Name}: {mimeType}");
 
         // Create JSON payload
         var jsonPayload = new
