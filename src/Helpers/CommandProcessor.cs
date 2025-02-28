@@ -38,6 +38,7 @@ public static class CommandProcessor
         switch (command)
         {
             case "upload":
+                Logger.Info("uploading...");
                 await UploadCommand.Execute(parameter);
                 break;
             case "grok":
