@@ -3,6 +3,50 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 
+// Name	      Value	 Description
+// Black	  0	     black
+// DarkBlue	  1	     blue
+// DarkGreen  2      dark green
+// DarkCyan	  3      dark cyan (dark blue-green).
+
+// DarkRed	4	
+// The color dark red.
+
+// DarkMagenta	5	
+// The color dark magenta (dark purplish-red).
+
+// DarkYellow	6	
+// The color dark yellow (ochre).
+
+// Gray	7	
+// The color gray.
+
+// DarkGray	8	
+// The color dark gray.
+
+// Blue	9	
+// The color blue.
+
+// Green	10	
+// The color green.
+
+// Cyan	11	
+// The color cyan (blue-green).
+
+// Red	12	
+// The color red.
+
+// Magenta	13	
+// The color magenta (purplish-red).
+
+// Yellow	14	
+// The color yellow.
+
+// White	15	
+// The color white.
+
+
+
 namespace GrokCLI.Helpers
 {
     public static class Logger
@@ -10,6 +54,7 @@ namespace GrokCLI.Helpers
         private static ConsoleColor _infoColor = ConsoleColor.White;
         private static ConsoleColor _errorColor = ConsoleColor.DarkRed;
         private static ConsoleColor _debugColor = ConsoleColor.Blue;
+        private static ConsoleColor _messageColor = ConsoleColor.DarkCyan;
         private static string _theme = "light"; // Default theme
 
         static Logger()
@@ -43,16 +88,19 @@ namespace GrokCLI.Helpers
                     _infoColor = ConsoleColor.White;
                     _errorColor = ConsoleColor.DarkRed;
                     _debugColor = ConsoleColor.Blue;
+                    _messageColor = ConsoleColor.DarkCyan;
                     break;
                 case "dark":
                     _infoColor = ConsoleColor.Gray;
                     _errorColor = ConsoleColor.Red;
                     _debugColor = ConsoleColor.Cyan;
+                    _messageColor = ConsoleColor.DarkCyan;
                     break;
                 default:
                     _infoColor = ConsoleColor.White;
                     _errorColor = ConsoleColor.DarkRed;
                     _debugColor = ConsoleColor.Blue;
+                    _messageColor = ConsoleColor.DarkCyan;
                     break;
             }
         }
@@ -72,7 +120,9 @@ namespace GrokCLI.Helpers
             Console.ForegroundColor = _errorColor;
             Console.Write("[ERROR]");
             Console.ResetColor();
+            Console.ForegroundColor = _messageColor;
             Console.WriteLine($" {message}");
+            Console.ResetColor();
         }
         
         public static void Debug(string message)
@@ -80,7 +130,9 @@ namespace GrokCLI.Helpers
             Console.ForegroundColor = _debugColor;
             Console.Write("[DEBU]");
             Console.ResetColor();
+            Console.ForegroundColor = _messageColor;
             Console.WriteLine($" {message}");
+            Console.ResetColor();
         }
 
         public static void Debug(string format, params object[] args)
@@ -88,7 +140,9 @@ namespace GrokCLI.Helpers
             Console.ForegroundColor = _debugColor;
             Console.Write("[DEBU]");
             Console.ResetColor();
+            Console.ForegroundColor = _messageColor;
             Console.WriteLine($" {string.Format(format, args)}");
+            Console.ResetColor();
         }
 
         public static void Info(string message)
@@ -96,7 +150,9 @@ namespace GrokCLI.Helpers
             Console.ForegroundColor = _infoColor;
             Console.Write("[INFO]");
             Console.ResetColor();
+            Console.ForegroundColor = _messageColor;
             Console.WriteLine($" {message}");
+            Console.ResetColor();
         }
 
         public static void Info(string format, params object[] args)
@@ -104,7 +160,9 @@ namespace GrokCLI.Helpers
             Console.ForegroundColor = _infoColor;
             Console.Write("[INFO]");
             Console.ResetColor();
+            Console.ForegroundColor = _messageColor;
             Console.WriteLine($" {string.Format(format, args)}");
+            Console.ResetColor();
         }
 
         public static void Output(string message)
