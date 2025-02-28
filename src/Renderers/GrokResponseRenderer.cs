@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GrokCLI.Helpers;
 
 public class GrokResponseRenderer : IRenderer
 {
@@ -88,11 +89,11 @@ public class GrokResponseRenderer : IRenderer
             }
             catch (JsonException ex)
             {
-                Console.WriteLine($"Error parsing JSON: {ex.Message}");
+                Logger.Error($"Error parsing JSON: {ex.Message}");
             }
         }
 
         // Output the rendered conversation
-        Console.WriteLine(conversation.ToString());
+        Logger.Output(conversation.ToString());
     }
 }
