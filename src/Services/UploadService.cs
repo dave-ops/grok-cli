@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using GrokCLI.Utils;
 using GrokCLI.Helpers;
 
+namespace GrokCLI.Services;
+
 public class UploadService
 {
     private static readonly HttpClient client = new HttpClient();

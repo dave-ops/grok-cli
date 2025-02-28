@@ -1,6 +1,8 @@
 [*.cs]
-dotnet_diagnostic.CA1822.severity = warning  // Example: Mark unused variables as warnings
+dotnet_diagnostic.CA1822.severity = warning
 dotnet_style_readonly_field = true:suggestion
+dotnet_diagnostic.CA1724.severity = warning
+csharp_namespace_declarations = file_scoped
 [*]
 indent_size = 4
 indent_style = space
