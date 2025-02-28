@@ -5,18 +5,13 @@ using System.Threading.Tasks;
 
 namespace GrokCLI
 {
-    public class PreviewImage
+    public class PreviewImage(string imageUrl)
     {
-        public string ImageUrl { get; private set; }
-        public byte[] ImageData { get; private set; }
-        public string ContentType { get; private set; }
-        private readonly HttpClient _httpClient;
+        public string ImageUrl { get; private set; } = imageUrl;
+        public byte[]? ImageData { get; private set; }
+        public string? ContentType { get; private set; }
+        private readonly HttpClient _httpClient = new HttpClient();
 
-        public PreviewImage(string imageUrl)
-        {
-            ImageUrl = imageUrl;
-            _httpClient = new HttpClient();
-        }
         public async Task LoadImageAsync()
         {
             try
@@ -38,23 +33,6 @@ namespace GrokCLI
                 // Handle other potential errors
                 Console.WriteLine($"An unexpected error occurred: {ex.Message}");
                 ImageData = null;
-            }
-        }
-
-         public static async Task Main(string[] args)
-        {
-            string imageUrl = "https://assets.grok.com/users/fa5c83b9-b2c1-4bbc-8d3a-81f4c18f2d9b/67648c26-51a8-4051-97cc-a390250ce503/preview-image";
-            PreviewImage preview = new PreviewImage(imageUrl);
-
-            await preview.LoadImageAsync();
-
-            if (preview.ImageData != null)
-            {
-                Console.WriteLine($"Image downloaded successfully. {preview.ImageData.Length} bytes. ContentType: {preview.ContentType}");
-            }
-            else
-            {
-                Console.WriteLine("Failed to download image.");
             }
         }
     }

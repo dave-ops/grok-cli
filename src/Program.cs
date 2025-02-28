@@ -52,6 +52,20 @@ switch (command)
         await new GetRateLimit().Execute();
         break;
 
+    case "preview":
+        string imageUrl = "https://assets.grok.com/users/fa5c83b9-b2c1-4bbc-8d3a-81f4c18f2d9b/67648c26-51a8-4051-97cc-a390250ce503/preview-image";
+        PreviewImage preview = new PreviewImage(imageUrl);
+        await preview.LoadImageAsync();
+        if (preview.ImageData != null)
+        {
+            Console.WriteLine($"Image downloaded successfully. {preview.ImageData.Length} bytes. ContentType: {preview.ContentType}");
+        }
+        else
+        {
+            Console.WriteLine("Failed to download image.");
+        }
+        break;
+
     default:
         Console.WriteLine($"Unknown command '{command}'. Defaulting to Grok with message: 'Default Grok message'");
         await new Grok3().Execute("Default Grok message");
