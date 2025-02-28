@@ -5,19 +5,18 @@ namespace GrokCLI.Utils
 {
     public static class HttpHeaderCollection
     {
-        private static readonly IConfiguration _config;
-        private static readonly IReadOnlyDictionary<string, string> BaseHeaders;
-
-        static HttpHeaderCollection()
+        private static readonly Lazy<IReadOnlyDictionary<string, string>> BaseHeaders = new(() =>
         {
-            _config = new ConfigurationBuilder()
+            var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            BaseHeaders = _config.GetSection("HttpHeaders:BaseHeaders")
+            var headers = config.GetSection("HttpHeaders:BaseHeaders")
                 .Get<Dictionary<string, string>>();
-        }
+
+            return headers ?? new Dictionary<string, string>();
+        });
 
         public static IReadOnlyDictionary<string, string> RateLimitHeaders => 
             BuildHeaders("RateLimitHeaders");
@@ -30,10 +29,15 @@ namespace GrokCLI.Utils
 
         private static IReadOnlyDictionary<string, string> BuildHeaders(string sectionName)
         {
-            var specificHeaders = _config.GetSection($"HttpHeaders:{sectionName}")
-                .Get<Dictionary<string, string>>();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
 
-            var combinedHeaders = new Dictionary<string, string>(BaseHeaders);
+            var specificHeaders = config.GetSection($"HttpHeaders:{sectionName}")
+                .Get<Dictionary<string, string>>() ?? new Dictionary<string, string>();
+
+            var combinedHeaders = new Dictionary<string, string>(BaseHeaders.Value);
 
             foreach (var header in specificHeaders)
             {
