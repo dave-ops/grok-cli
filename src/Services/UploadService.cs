@@ -11,18 +11,24 @@ public class UploadService
 
     public async Task<string> Execute(FileInfo file)
     {
-
-        Logger.Info("executing...");
+        Logger.Info($"executing... uploading {file.Name}");
 
         // Read file content and convert to base64
         byte[] fileBytes = await File.ReadAllBytesAsync(file.FullName);
         string base64Content = Convert.ToBase64String(fileBytes);
 
+        // Determine the correct MIME type for the file
+        string mimeType = MimeHelper.GetMimeType(file.Extension) ?? "text/plain"; // Default to text/plain if unknown
+        if (file.Extension.Equals(".md", StringComparison.OrdinalIgnoreCase))
+        {
+            mimeType = "text/markdown"; // Explicitly set .md files to text/markdown if the API prefers this
+        }
+
         // Create JSON payload
         var jsonPayload = new
         {
             fileName = file.Name,
-            fileMimeType = MimeHelper.GetMimeType(file.Extension),
+            fileMimeType = mimeType, // Use the corrected MIME type
             content = base64Content
         };
 
@@ -50,7 +56,7 @@ public class UploadService
         if (!response.IsSuccessStatusCode)
         {
             string errorContent = await response.Content.ReadAsStringAsync();
-            Logger.Info($"Error: HTTP {response.StatusCode} - {errorContent}");
+            Logger.Error($"Error: HTTP {response.StatusCode} - {errorContent}");
             return $"Error: HTTP {response.StatusCode} - {errorContent}";
         }
 
