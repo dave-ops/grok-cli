@@ -21,7 +21,7 @@ public static class CommandProcessor
     private static (string cmd, string? prompt) ParseArgs(string[] args)
     {
         string cmd = args[0];
-        string prompt = args[1];
+        string? prompt = args.Length > 1 ? args[1] : null;
         Logger.Info($"cmd: {cmd}, Parameter: {prompt}");
         return (cmd, prompt);
     }
