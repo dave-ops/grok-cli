@@ -1,1 +1,0 @@
-C:\_dev\repos\grok-cli\.sonarqube\out\0
