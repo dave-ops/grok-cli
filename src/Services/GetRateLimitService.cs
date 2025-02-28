@@ -58,14 +58,13 @@ namespace GrokCLI
                     }
                     else if (contentEncoding?.Contains("br", StringComparison.OrdinalIgnoreCase) == true)
                     {
-                        // Note: Brotli requires the System.IO.Compression.Brotli NuGet package
-                        // Install it via: dotnet add package System.IO.Compression.Brotli
                         using (var memoryStream = new MemoryStream(responseBytes))
                         using (var brotliStream = new BrotliStream(memoryStream, CompressionMode.Decompress))
                         using (var decompressedStream = new MemoryStream())
                         {
-                            brotliStream.CopyTo(decompressedStream);
+                            await brotliStream.CopyToAsync(decompressedStream);
                             responseBytes = decompressedStream.ToArray();
+                            Logger.Info(responseBytes.Length.ToString() + "");
                         }
                     }
                     else if (contentEncoding?.Contains("zstd", StringComparison.OrdinalIgnoreCase) == true)
@@ -77,6 +76,7 @@ namespace GrokCLI
 
                 // Convert the decompressed bytes to a string
                 string resultString = Encoding.UTF8.GetString(responseBytes);
+                Logger.Output(resultString);
                 return resultString;
             }
         }

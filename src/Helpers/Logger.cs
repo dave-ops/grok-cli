@@ -48,4 +48,23 @@ public static class Logger
     {
         Console.WriteLine($"[INFO] {format}", args);
     }
+
+    /// <summary>
+    /// Writes a raw message to the console as-is.
+    /// </summary>
+    /// <param name="message">The message to out.</param>
+    public static void Output(string message)
+    {
+        Console.WriteLine(message);
+    }
+
+    /// <summary>
+    /// Writes a raw message to the console as-is.
+    /// </summary>
+    /// <param name="message">The message to out.</param>
+    public static void Output(string format, params object[] args)
+    {
+        Console.WriteLine($"{format}", args);
+    }
+
 }
