@@ -1,7 +1,7 @@
 {
-  "name": "grokcs",
+  "name": "GrokCLI",
   "version": "1.0.0",
-  "description": "```\r dotnet new console -n GrokCS\r dotnet build\r dotnet run\r ```",
+  "description": "```\r dotnet new console -n GrokCLI\r dotnet build\r dotnet run\r ```",
   "license": "ISC",
   "author": "",
   "type": "commonjs",

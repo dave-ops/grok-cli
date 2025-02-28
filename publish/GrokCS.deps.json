@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v9.0": {},
     ".NETCoreApp,Version=v9.0/win-x64": {
-      "GrokCS/1.0.0": {
+      "GrokCLI/1.0.0": {
         "dependencies": {
           "Google.Protobuf": "3.29.3",
           "Grpc.Net.Client": "2.67.0",
@@ -17,7 +17,7 @@
           "runtimepack.Microsoft.NETCore.App.Runtime.win-x64": "9.0.1"
         },
         "runtime": {
-          "GrokCS.dll": {}
+          "GrokCLI.dll": {}
         }
       },
       "runtimepack.Microsoft.NETCore.App.Runtime.win-x64/9.0.1": {
@@ -810,7 +810,7 @@
     }
   },
   "libraries": {
-    "GrokCS/1.0.0": {
+    "GrokCLI/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
