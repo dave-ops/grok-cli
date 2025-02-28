@@ -1,15 +1,10 @@
-using System;
-using System.Net.Http;
-using System.Text.Json;
 using System.Text;
-using System.Reflection.Metadata.Ecma335;
-using System.Threading.Tasks;
+using GrokCLI.Helpers;
 using GrokCLI.Utils;
-
 
 namespace GrokCLI
 {
-    public class Grok {
+    public class GrokService {
 
     public async Task<byte[]> Execute(string message = "say your name") 
         {
@@ -35,7 +30,7 @@ namespace GrokCLI
                 }
                 catch (HttpRequestException ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Logger.Info($"Error: {ex.Message}");
                     throw;
                 }
             }

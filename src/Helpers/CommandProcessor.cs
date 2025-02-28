@@ -1,3 +1,5 @@
+using GrokCLI.Helpers;
+
 namespace GrokCLI;
 
 public static class CommandProcessor
@@ -6,12 +8,12 @@ public static class CommandProcessor
     {
         if (args == null || args.Length == 0)
         {
-            Console.WriteLine("No arguments provided. Defaulting to 'grok' with message: 'Default Grok message'");
-            await new Grok().Execute("Default Grok message");
+            Logger.Info("No arguments provided. Defaulting to 'grok' with message: 'Default Grok message'");
+            await new GrokService().Execute("Default Grok message");
             return;
         }
 
-        Console.WriteLine($"Args: {string.Join(", ", args)}");
+        Logger.Info($"Args: {string.Join(", ", args)}");
         var parsedArgs = ParseArgs(args);
         
         await ExecuteCommand(parsedArgs.Command, parsedArgs.Parameter);
@@ -27,7 +29,7 @@ public static class CommandProcessor
             ? args[commandPrefix == "grok" ? 2 : 1] 
             : null;
 
-        Console.WriteLine($"Command: {command}, Parameter: {parameter}");
+        Logger.Info($"Command: {command}, Parameter: {parameter}");
         return (command, parameter);
     }
 
@@ -54,7 +56,7 @@ public static class CommandProcessor
                 await PreviewCommand.Execute();
                 break;
             default:
-                Console.WriteLine($"Unknown command '{command}'. Defaulting to Grok with message: 'Default Grok message'");
+                Logger.Info($"Unknown command '{command}'. Defaulting to Grok with message: 'Default Grok message'");
                 await ExecuteDefaultGrok();
                 break;
         }
@@ -62,7 +64,7 @@ public static class CommandProcessor
 
     private static async Task ExecuteDefaultGrok()
     {
-        Console.WriteLine("No valid command provided. Defaulting to 'grok' with message: 'Default Grok message'");
-        await new Grok().Execute("Default Grok message");
+        Logger.Info("No valid command provided. Defaulting to 'grok' with message: 'Default Grok message'");
+        await new GrokService().Execute("Default Grok message");
     }
 }
