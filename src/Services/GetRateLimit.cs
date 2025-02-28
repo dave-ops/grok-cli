@@ -1,10 +1,6 @@
-using System;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO.Compression;
-using System.IO;
-using System.Net.Http.Headers;
+using GrokCLI.Helpers;
 using GrokCLI.Utils;
 
 namespace GrokCLI
