@@ -42,7 +42,7 @@ namespace GrokCLI
                         using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
                         using (var decompressedStream = new MemoryStream())
                         {
-                            gzipStream.CopyTo(decompressedStream);
+                            await gzipStream.CopyToAsync(decompressedStream);
                             responseBytes = decompressedStream.ToArray();
                         }
                     }
@@ -52,7 +52,7 @@ namespace GrokCLI
                         using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress))
                         using (var decompressedStream = new MemoryStream())
                         {
-                            deflateStream.CopyTo(decompressedStream);
+                            await deflateStream.CopyToAsync(decompressedStream);
                             responseBytes = decompressedStream.ToArray();
                         }
                     }
