@@ -35,7 +35,7 @@ namespace GrokCLI
                 }
                 catch (HttpRequestException ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Logger.Info($"Error: {ex.Message}");
                     throw;
                 }
             }

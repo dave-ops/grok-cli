@@ -22,7 +22,7 @@ namespace GrokCLI {
             // Check if the file exists before creating FileInfo
             if (!File.Exists(filePath))
             {
-                Console.WriteLine($"Warning: File does not exist at path: {filePath}");
+                Logger.Info($"Warning: File does not exist at path: {filePath}");
                 return null; 
             }
 
@@ -34,7 +34,7 @@ namespace GrokCLI {
             catch (Exception ex)
             {
                 //Catch any unhandled exceptions
-                Console.WriteLine($"Error getting FileInfo for path {filePath}: {ex.Message}");
+                Logger.Info($"Error getting FileInfo for path {filePath}: {ex.Message}");
                 return null;
             }
         }

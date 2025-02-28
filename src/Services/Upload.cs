@@ -11,7 +11,7 @@ public class Upload
     public async Task<string> Execute(FileInfo file)
     {
 
-        Console.WriteLine("executing...");
+        Logger.Info("executing...");
 
         // Read file content and convert to base64
         byte[] fileBytes = await File.ReadAllBytesAsync(file.FullName);
@@ -42,22 +42,22 @@ public class Upload
         }
 
         // Send the request and get response
-        Console.WriteLine("sending...");
+        Logger.Info("sending...");
         HttpResponseMessage response = await client.SendAsync(request);
         
         // Check if the response is successful before calling EnsureSuccessStatusCode
         if (!response.IsSuccessStatusCode)
         {
             string errorContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Error: HTTP {response.StatusCode} - {errorContent}");
+            Logger.Info($"Error: HTTP {response.StatusCode} - {errorContent}");
             return $"Error: HTTP {response.StatusCode} - {errorContent}";
         }
 
         response.EnsureSuccessStatusCode();
-        Console.WriteLine("sent.");
-        Console.WriteLine("receiving....");
+        Logger.Info("sent.");
+        Logger.Info("receiving....");
         string responseBody = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("received.");
+        Logger.Info("received.");
         return responseBody;
     }
 

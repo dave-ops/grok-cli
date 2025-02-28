@@ -28,8 +28,8 @@ namespace GrokCLI
                 response.EnsureSuccessStatusCode();
 
                 // Log response headers to understand encoding and content type
-                Console.WriteLine("Content-Type: " + response.Content.Headers.ContentType);
-                Console.WriteLine("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
+                Logger.Info("Content-Type: " + response.Content.Headers.ContentType);
+                Logger.Info("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
 
                 // Read the raw response as a byte array
                 byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
@@ -38,7 +38,7 @@ namespace GrokCLI
                 if (response.Content.Headers.ContentEncoding != null && response.Content.Headers.ContentEncoding.Any())
                 {
                     string? contentEncoding = response.Content.Headers.ContentEncoding.FirstOrDefault();
-                    Console.WriteLine($"Decompressing response with encoding: {contentEncoding}");
+                    Logger.Info($"Decompressing response with encoding: {contentEncoding}");
 
                     if (contentEncoding?.Contains("gzip", StringComparison.OrdinalIgnoreCase) == true)
                     {
@@ -74,7 +74,7 @@ namespace GrokCLI
                     }
                     else if (contentEncoding?.Contains("zstd", StringComparison.OrdinalIgnoreCase) == true)
                     {
-                        Console.WriteLine("Zstandard (zstd) compression detected, but not supported in this code.");
+                        Logger.Info("Zstandard (zstd) compression detected, but not supported in this code.");
                         return "Unsupported compression: zstd";
                     }
                 }

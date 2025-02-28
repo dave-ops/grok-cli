@@ -38,4 +38,14 @@ public static class Logger
     {
         Console.WriteLine($"[INFO] {message}");
     }
+
+    /// <summary>
+    /// Writes a formatted informational message to the console with "[INFO]" prefix.
+    /// </summary>
+    /// <param name="format">A composite format string.</param>
+    /// <param name="args">An array of objects to write using the format.</param>
+    public static void Info(string format, params object[] args)
+    {
+        Console.WriteLine($"[INFO] {format}", args);
+    }
 }

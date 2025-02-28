@@ -25,13 +25,13 @@ namespace GrokCLI
             catch (HttpRequestException ex)
             {
                 // Handle network or HTTP request errors
-                Console.WriteLine($"Error loading image: {ex.Message}");
+                Logger.Info($"Error loading image: {ex.Message}");
                 ImageData = null;
             }
             catch (Exception ex)
             {
                 // Handle other potential errors
-                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                Logger.Info($"An unexpected error occurred: {ex.Message}");
                 ImageData = null;
             }
         }

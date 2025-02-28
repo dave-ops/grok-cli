@@ -10,11 +10,11 @@ public static class PreviewCommand
         
         if (preview.ImageData != null)
         {
-            Console.WriteLine($"Image downloaded successfully. {preview.ImageData.Length} bytes. ContentType: {preview.ContentType}");
+            Logger.Info($"Image downloaded successfully. {preview.ImageData.Length} bytes. ContentType: {preview.ContentType}");
         }
         else
         {
-            Console.WriteLine("Failed to download image.");
+            Logger.Info("Failed to download image.");
         }
     }
 }
