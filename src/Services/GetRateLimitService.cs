@@ -30,49 +30,9 @@ namespace GrokCLI
                 // Read the raw response as a byte array
                 byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
 
-                // Handle decompression if the response is compressed
-                if (response.Content.Headers.ContentEncoding != null && response.Content.Headers.ContentEncoding.Any())
-                {
-                    string? contentEncoding = response.Content.Headers.ContentEncoding.FirstOrDefault();
-                    Logger.Info($"Decompressing response with encoding: {contentEncoding}");
-
-                    if (contentEncoding?.Contains("gzip", StringComparison.OrdinalIgnoreCase) == true)
-                    {
-                        using (var memoryStream = new MemoryStream(responseBytes))
-                        using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                        using (var decompressedStream = new MemoryStream())
-                        {
-                            gzipStream.CopyTo(decompressedStream);
-                            responseBytes = decompressedStream.ToArray();
-                        }
-                    }
-                    else if (contentEncoding?.Contains("deflate", StringComparison.OrdinalIgnoreCase) == true)
-                    {
-                        using (var memoryStream = new MemoryStream(responseBytes))
-                        using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress))
-                        using (var decompressedStream = new MemoryStream())
-                        {
-                            deflateStream.CopyTo(decompressedStream);
-                            responseBytes = decompressedStream.ToArray();
-                        }
-                    }
-                    else if (contentEncoding?.Contains("br", StringComparison.OrdinalIgnoreCase) == true)
-                    {
-                        using (var memoryStream = new MemoryStream(responseBytes))
-                        using (var brotliStream = new BrotliStream(memoryStream, CompressionMode.Decompress))
-                        using (var decompressedStream = new MemoryStream())
-                        {
-                            await brotliStream.CopyToAsync(decompressedStream);
-                            responseBytes = decompressedStream.ToArray();
-                            Logger.Info(responseBytes.Length.ToString() + "");
-                        }
-                    }
-                    else if (contentEncoding?.Contains("zstd", StringComparison.OrdinalIgnoreCase) == true)
-                    {
-                        Logger.Info("Zstandard (zstd) compression detected, but not supported in this code.");
-                        return "Unsupported compression: zstd";
-                    }
-                }
+                // Handle decompression using the reusable method
+                string? contentEncoding = response.Content.Headers.ContentEncoding?.FirstOrDefault();
+                responseBytes = DecompressionHelper.DecompressResponse(responseBytes, contentEncoding);
 
                 // Convert the decompressed bytes to a string
                 string resultString = Encoding.UTF8.GetString(responseBytes);
