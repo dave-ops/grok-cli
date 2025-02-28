@@ -1,0 +1,3 @@
+[*.cs]
+dotnet_diagnostic.CA1822.severity = warning  // Example: Mark unused variables as warnings
+dotnet_style_readonly_field = true:suggestion
