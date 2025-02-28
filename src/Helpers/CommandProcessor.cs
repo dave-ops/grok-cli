@@ -1,56 +1,53 @@
-namespace GrokCLI.Helpers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using GrokCLI.Utils;
 
-public static class CommandProcessor
+namespace GrokCLI.Helpers
 {
-    public static async Task ProcessArgs(string[]? args)
+    public static class CommandProcessor
     {
-        if (args == null || args.Length == 0)
+        // Dictionary to map command names to their corresponding command types
+        private static readonly Dictionary<string, Type> CommandTypes = new()
         {
-            Logger.Info("No arguments provided. Defaulting to 'grok' with message: 'Default Grok message'");
-            await new GrokService().Execute("Default Grok message");
-            return;
+            { GrokCommand.CommandName, typeof(GrokCommand) },
+            { UploadCommand.CommandName, typeof(UploadCommand) },
+            { RateLimitCommand.CommandName, typeof(RateLimitCommand) }
+        };
+
+        public static async Task ProcessArgs(string[] args)
+        {
+            if (args == null || args.Length == 0)
+            {
+                Logger.Info("No args provided, defaulting to 'grok' with default message");
+                await ExecuteCommand(GrokCommand.CommandName, null);
+                return;
+            }
+
+            string cmd = args[0].ToLowerInvariant();
+            string? parameter = args.Length > 1 ? args[1] : null;
+
+            await ExecuteCommand(cmd, parameter);
         }
 
-        Logger.Info($"Args: {string.Join(", ", args)}");
-        var parsedArgs = ParseArgs(args);
-        Logger.Info(parsedArgs.ToString());
-        
-        await ExecuteCommand(parsedArgs.cmd, parsedArgs.prompt);
-    }
-
-    private static (string cmd, string? prompt) ParseArgs(string[] args)
-    {
-        string cmd = args[0];
-        string? prompt = args.Length > 1 ? args[1] : null;
-        Logger.Info($"cmd: {cmd}, Parameter: {prompt}");
-        return (cmd, prompt);
-    }
-
-    private static async Task ExecuteCommand(string command, string? parameter)
-    {
-        Logger.Info($"excuting... {command} {parameter}");
-        if (string.IsNullOrEmpty(command))
+        private static async Task ExecuteCommand(string cmd, string? parameter)
         {
-            Logger.Info("Command Required.");
-            return;
-        }
-
-        switch (command)
-        {
-            case "upload":
-                Logger.Info("uploading...");
-                await UploadCommand.Execute(parameter);
-                break;
-            case "grok":
-                Logger.Info("in grok");
-                await GrokCommand.Execute(parameter);
-                break;
-            case "ratelimit":
-                await RateLimitCommand.Execute();
-                break;
-            default:
-                await GrokCommand.Execute(parameter);
-                break;
+            if (CommandTypes.TryGetValue(cmd, out Type? commandType))
+            {
+                try
+                {
+                    var command = (ICommand)Activator.CreateInstance(commandType)!;
+                    await command.Execute(parameter);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error executing command {cmd}: {ex.Message}");
+                }
+            }
+            else
+            {
+                Logger.Error($"Unknown command: {cmd}");
+            }
         }
     }
 }
