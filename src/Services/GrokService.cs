@@ -3,88 +3,86 @@ using System.Text;
 using GrokCLI.Helpers;
 using GrokCLI.Utils;
 
-namespace GrokCLI
+namespace GrokCLI.Services;
+public class GrokService
 {
-    public class GrokService
+    public async Task<byte[]> Execute(string message = "say your name")
     {
-        public async Task<byte[]> Execute(string message = "say your name")
+        Logger.Info($"Grok service executing with message: {message}");
+        var handler = new HttpClientHandler
         {
-            Logger.Info($"Grok service executing with message: {message}");
-            var handler = new HttpClientHandler
+            AllowAutoRedirect = true, // Follow redirects like curl --location
+            MaxAutomaticRedirections = 10
+        };
+        
+        using (var client = new HttpClient(handler))
+        {
+            var url = "https://grok.com/rest/app-chat/conversations/new";
+
+            // Replace {message} placeholder with the actual message
+            var jsonPayload = @"{
+                ""temporary"":false,
+                ""modelName"":""grok-latest"",
+                ""message"":""{message}"",
+                ""fileAttachments"":[],
+                ""imageAttachments"":[],
+                ""disableSearch"":false,
+                ""enableImageGeneration"":true,
+                ""returnImageBytes"":false,
+                ""returnRawGrokInXaiRequest"":false,
+                ""enableImageStreaming"":true,
+                ""imageGenerationCount"":2,
+                ""forceConcise"":false,
+                ""toolOverrides"":{},
+                ""enableSideBySide"":true,
+                ""isPreset"":false,
+                ""sendFinalMetadata"":true,
+                ""customInstructions"":"""",
+                ""deepsearchPreset"":"""",
+                ""isReasoning"":false
+            }".Replace("{message}", message);
+
+            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
-                AllowAutoRedirect = true, // Follow redirects like curl --location
-                MaxAutomaticRedirections = 10
+                Content = content
             };
-            
-            using (var client = new HttpClient(handler))
+
+            // Add headers from HttpHeaderCollection.GrokHeaders
+            foreach (var header in HttpHeaderCollection.GrokHeaders)
             {
-                var url = "https://grok.com/rest/app-chat/conversations/new";
+                request.Headers.Add(header.Key, header.Value);
+            }
 
-                // Replace {message} placeholder with the actual message
-                var jsonPayload = @"{
-                    ""temporary"":false,
-                    ""modelName"":""grok-latest"",
-                    ""message"":""{message}"",
-                    ""fileAttachments"":[],
-                    ""imageAttachments"":[],
-                    ""disableSearch"":false,
-                    ""enableImageGeneration"":true,
-                    ""returnImageBytes"":false,
-                    ""returnRawGrokInXaiRequest"":false,
-                    ""enableImageStreaming"":true,
-                    ""imageGenerationCount"":2,
-                    ""forceConcise"":false,
-                    ""toolOverrides"":{},
-                    ""enableSideBySide"":true,
-                    ""isPreset"":false,
-                    ""sendFinalMetadata"":true,
-                    ""customInstructions"":"""",
-                    ""deepsearchPreset"":"""",
-                    ""isReasoning"":false
-                }".Replace("{message}", message);
+            try
+            {
+                Logger.Info($"Sending request to {url}");
+                Logger.Info($"Request headers: {request.Headers}");
+                Logger.Info($"Request body: {jsonPayload}");
 
-                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
 
-                var request = new HttpRequestMessage(HttpMethod.Post, url)
-                {
-                    Content = content
-                };
+                // Log response headers to understand encoding and content type
+                Logger.Info("Content-Type: " + response.Content.Headers.ContentType);
+                Logger.Info("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
 
-                // Add headers from HttpHeaderCollection.GrokHeaders
-                foreach (var header in HttpHeaderCollection.GrokHeaders)
-                {
-                    request.Headers.Add(header.Key, header.Value);
-                }
+                // Read the raw response as a byte array
+                byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
 
-                try
-                {
-                    Logger.Info($"Sending request to {url}");
-                    Logger.Info($"Request headers: {request.Headers}");
-                    Logger.Info($"Request body: {jsonPayload}");
+                // Handle decompression using the reusable method
+                string? contentEncoding = response.Content.Headers.ContentEncoding?.FirstOrDefault();
+                responseBytes = DecompressionHelper.DecompressResponse(responseBytes, contentEncoding) ?? responseBytes;
 
-                    var response = await client.SendAsync(request);
-                    response.EnsureSuccessStatusCode();
-
-                    // Log response headers to understand encoding and content type
-                    Logger.Info("Content-Type: " + response.Content.Headers.ContentType);
-                    Logger.Info("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
-
-                    // Read the raw response as a byte array
-                    byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
-
-                    // Handle decompression using the reusable method
-                    string? contentEncoding = response.Content.Headers.ContentEncoding?.FirstOrDefault();
-                    responseBytes = DecompressionHelper.DecompressResponse(responseBytes, contentEncoding) ?? responseBytes;
-
-                    // Return the decompressed bytes directly (no string conversion needed)
-                    Logger.Output(Encoding.UTF8.GetString(responseBytes));
-                    return responseBytes;
-                }
-                catch (HttpRequestException ex)
-                {
-                    Logger.Error($"HTTP request failed: {ex.Message}");
-                    throw;
-                }
+                // Return the decompressed bytes directly (no string conversion needed)
+                Logger.Output(Encoding.UTF8.GetString(responseBytes));
+                return responseBytes;
+            }
+            catch (HttpRequestException ex)
+            {
+                Logger.Error($"HTTP request failed: {ex.Message}");
+                throw;
             }
         }
     }

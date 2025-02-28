@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using GrokCLI.Commands;
 using GrokCLI.Utils;
 
 namespace GrokCLI.Helpers
