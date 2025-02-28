@@ -24,6 +24,22 @@ namespace GrokCLI.Helpers
             Console.WriteLine($" {message}");
         }
         
+        public static void Debug(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write("[DEBU]");
+            Console.ResetColor();
+            Console.WriteLine($" {message}");
+        }
+
+        public static void Debug(string format, params object[] args)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write("[DEBU]");
+            Console.ResetColor();
+            Console.WriteLine($" {string.Format(format, args)}");
+        }
+
         public static void Info(string message)
         {
             Console.ForegroundColor = ConsoleColor.White;
