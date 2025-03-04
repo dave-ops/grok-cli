@@ -1,4 +1,4 @@
 ﻿using GrokCLI.Helpers;
 
-Logger.Debug("Starting Grok ...");
+Logger.Info("starting grok ...");
 await CommandProcessor.ProcessArgs(args);
