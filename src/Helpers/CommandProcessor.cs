@@ -12,6 +12,7 @@ namespace GrokCLI.Helpers
         private static readonly Dictionary<string, Type> CommandTypes = new()
         {
             { GrokCommand.CommandName, typeof(GrokCommand) },
+            { ClipboardCommand.CommandName, typeof(ClipboardCommand) },
             { UploadCommand.CommandName, typeof(UploadCommand) },
             { RateLimitCommand.CommandName, typeof(RateLimitCommand) }
         };

@@ -16,7 +16,8 @@ public class UploadCommand : ICommand
             if (file.Exists)
             {
                 Logger.Info($"{CommandName} command executing with file: {file.Name}");
-                await new UploadService().Execute(file);
+                var result = await new UploadService().Execute(file);
+                Logger.Info($"{result}");
             }
             else
             {
