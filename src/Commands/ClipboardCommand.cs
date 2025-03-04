@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using GrokCLI.Services;
 
 namespace GrokCLI.Commands
 {
@@ -8,22 +9,34 @@ namespace GrokCLI.Commands
     {
         public const string CommandName = "clip";
 
-        public Task Execute(string? parameter = null)
+        public async Task Execute(string? parameter = null)
         {
+            if (string.IsNullOrEmpty(parameter)) {
+                return;
+            }
+
             (string contentType, string text) = GetClipboardContentInfo();
             if (text != null)
             {
                 Console.WriteLine($"Clipboard content type: {contentType}");
-                Console.Write("Please enter a filename: ");
-                string? filename = Console.ReadLine();
-                Console.WriteLine($"clipping to {filename}");
+                Console.Write("what do you want to call your clip: ");
+                string? name = Console.ReadLine();
+                Console.WriteLine($"clipping to {name}");
+                string prompt = $"{name}\n" +
+                                        $"{Constants.MD_CODE_BRACKET}\n" +
+                                        $"{GetClipboardUnicodeText()}\n" +
+                                        $"{Constants.MD_CODE_BRACKET}\n" +
+                                        "prompt:\n" +
+                                        $"{Constants.MD_CODE_BRACKET}\n" +
+                                        $"{parameter}\n" +
+                                        $"{Constants.MD_CODE_BRACKET}\n";
+                await new GrokService().Execute(prompt);
             }
             else
             {
                 Console.WriteLine("No supported content found in clipboard or clipboard is not available.");
+                await new GrokService().Execute(parameter);
             }
-
-            return Task.CompletedTask;
         }
 
         private static (string contentType, string text) GetClipboardContentInfo()
