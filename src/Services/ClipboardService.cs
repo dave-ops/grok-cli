@@ -1,16 +1,11 @@
+namespace GrokCLI.Services;
+
 using System;
 using System.Runtime.InteropServices;
 
-namespace GrokCLI.Commands
-{
-    public interface IClipboardService
+public class ClipboardService : IService
     {
-        (string contentType, string text) GetClipboardContentInfo();
-    }
-
-    public class ClipboardService : IClipboardService
-    {
-        public (string contentType, string text) GetClipboardContentInfo()
+        public Execute(string contentType, string text)
         {
             if (!OpenClipboard(IntPtr.Zero))
                 return (Constants.UNKNOWN, null);

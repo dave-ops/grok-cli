@@ -6,12 +6,6 @@ namespace GrokCLI.Commands
     public class ClipboardCommand : ICommand
     {
         public const string CommandName = "clip";
-        private readonly IClipboardService _clipboardService;
-
-        public ClipboardCommand(IClipboardService clipboardService = null)
-        {
-            _clipboardService = clipboardService ?? new ClipboardService();
-        }
 
         public async Task Execute(string? parameter = null)
         {
@@ -20,7 +14,7 @@ namespace GrokCLI.Commands
                 return;
             }
 
-            (string contentType, string text) = _clipboardService.GetClipboardContentInfo();
+            (string contentType, string text) = await new ClipboardService().Execute();
             if (text != null)
             {
                 Console.WriteLine($"Clipboard content type: {contentType}");
