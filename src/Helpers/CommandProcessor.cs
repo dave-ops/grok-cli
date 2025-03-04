@@ -13,6 +13,7 @@ namespace GrokCLI.Helpers
         {
             { GrokCommand.CommandName, typeof(GrokCommand) },
             { ClipboardCommand.CommandName, typeof(ClipboardCommand) },
+            { QuickCommand.CommandName, typeof(QuickCommand) },
             { UploadCommand.CommandName, typeof(UploadCommand) },
             { RateLimitCommand.CommandName, typeof(RateLimitCommand) }
         };
