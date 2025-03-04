@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
 using GrokCLI.Services;
+using GrokCLI.Utils;
 
 namespace GrokCLI.Commands
 {
@@ -32,7 +33,7 @@ namespace GrokCLI.Commands
                                         $"{Constants.MD_CODE_BRACKET}" +
                                         $"{parameter}" +
                                         $"{Constants.MD_CODE_BRACKET}";
-                string escaped = EscapeJsonString(prompt);
+                string escaped = StringUtils.EscapeJsonString(prompt);
                 await new GrokService().Execute(escaped);
             }
             else
@@ -40,56 +41,6 @@ namespace GrokCLI.Commands
                 Console.WriteLine("No supported content found in clipboard or clipboard is not available.");
                 await new GrokService().Execute(parameter);
             }
-        }
-
-        public static string EscapeJsonString(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-                return input;
-
-            // Using StringBuilder for efficient string manipulation
-            StringBuilder sb = new StringBuilder();
-            
-            foreach (char c in input)
-            {
-                switch (c)
-                {
-                    case '"':
-                        sb.Append("\\\"");
-                        break;
-                    case '\\':
-                        sb.Append("\\\\");
-                        break;
-                    case '\b':
-                        sb.Append("\\b");
-                        break;
-                    case '\f':
-                        sb.Append("\\f");
-                        break;
-                    case '\n':
-                        sb.Append("\\n");
-                        break;
-                    case '\r':
-                        sb.Append("\\r");
-                        break;
-                    case '\t':
-                        sb.Append("\\t");
-                        break;
-                    default:
-                        // For characters that need Unicode escaping (control characters)
-                        if (char.IsControl(c))
-                        {
-                            sb.Append($"\\u{(int)c:X4}");
-                        }
-                        else
-                        {
-                            sb.Append(c);
-                        }
-                        break;
-                }
-            }
-            
-            return sb.ToString();
         }
 
         private static (string contentType, string text) GetClipboardContentInfo()
