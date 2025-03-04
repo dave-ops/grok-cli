@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.IO;
+using GrokCLI;
 
 namespace GrokCLI.Commands
 {
@@ -9,11 +10,14 @@ namespace GrokCLI.Commands
     {
         public static (string contentType, string text) GetClipboardContentInfo()
         {
-            if (!OpenClipboard(IntPtr.Zero))
-                return ("Unknown", null);
+            string contentType = Constants.UNKNOWN;
+            string? result = null;
 
-            string contentType = "Unknown";
-            string result = null;
+            if (!OpenClipboard(IntPtr.Zero))
+            {
+                #pragma warning disable CS8619
+                return (contentType, result);
+            }
 
             try
             {
@@ -85,10 +89,10 @@ namespace GrokCLI.Commands
         private static (string contentType, string result) GetFileDropInfo()
         {
             IntPtr hClipboardData = GetClipboardData(CF_HDROP);
-            if (hClipboardData == IntPtr.Zero) return ("Unknown", null);
+            if (hClipboardData == IntPtr.Zero) return (Constants.UNKNOWN, null);
 
             IntPtr ptr = GlobalLock(hClipboardData);
-            if (ptr == IntPtr.Zero) return ("Unknown", null);
+            if (ptr == IntPtr.Zero) return (Constants.UNKNOWN, null);
 
             try
             {
