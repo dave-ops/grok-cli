@@ -1,55 +1,26 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using GrokCLI.Services;
+using System.IO;
+using GrokCLI;
 
 namespace GrokCLI.Commands
 {
-    public class ClipboardCommand : ICommand
+    public static class ClipboardHelper
     {
-        public const string CommandName = "clip";
-
-        public async Task Execute(string? parameter = null)
+        public static (string contentType, string text) GetClipboardContentInfo()
         {
-            if (string.IsNullOrEmpty(parameter)) {
-                return;
-            }
+            string contentType = Constants.UNKNOWN;
+            string? result = null;
 
-            (string contentType, string text) = GetClipboardContentInfo();
-            if (text != null)
-            {
-                Console.WriteLine($"Clipboard content type: {contentType}");
-                Console.Write("what do you want to call your clip: ");
-                string? name = Console.ReadLine();
-                Console.WriteLine($"clipping to {name}");
-                string prompt = $"{name}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        $"{GetClipboardUnicodeText()}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        "prompt:\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        $"{parameter}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n";
-                await new GrokService().Execute(prompt);
-            }
-            else
-            {
-                Console.WriteLine("No supported content found in clipboard or clipboard is not available.");
-                await new GrokService().Execute(parameter);
-            }
-        }
-
-        private static (string contentType, string text) GetClipboardContentInfo()
-        {
             if (!OpenClipboard(IntPtr.Zero))
-                return ("Unknown", null);
-
-            string contentType = "Unknown";
-            string result = null;
+            {
+                #pragma warning disable CS8619
+                return (contentType, result);
+            }
 
             try
             {
-                // Check for common formats
                 if (IsClipboardFormatAvailable(CF_UNICODETEXT))
                 {
                     contentType = "Unicode Text";
@@ -62,13 +33,13 @@ namespace GrokCLI.Commands
                 }
                 else if (IsClipboardFormatAvailable(CF_DIB))
                 {
-                    contentType = "Bitmap";
-                    // Handle bitmap data if needed (not returning text)
+                    contentType = "Bitmap (DIB)";
+                    result = "Clipboard contains a bitmap image (no specific format like JPG/PNG)";
+                    // Optionally, process DIB data further (see below)
                 }
                 else if (IsClipboardFormatAvailable(CF_HDROP))
                 {
-                    contentType = "File Drop";
-                    // Handle file list if needed (not returning text)
+                    (contentType, result) = GetFileDropInfo();
                 }
             }
             finally
@@ -115,6 +86,48 @@ namespace GrokCLI.Commands
             }
         }
 
+        private static (string contentType, string result) GetFileDropInfo()
+        {
+            IntPtr hClipboardData = GetClipboardData(CF_HDROP);
+            if (hClipboardData == IntPtr.Zero) return (Constants.UNKNOWN, null);
+
+            IntPtr ptr = GlobalLock(hClipboardData);
+            if (ptr == IntPtr.Zero) return (Constants.UNKNOWN, null);
+
+            try
+            {
+                // Get the number of files
+                uint fileCount = DragQueryFile(hClipboardData, 0xFFFFFFFF, null, 0);
+                if (fileCount == 0) return ("File Drop", "No files found in clipboard");
+
+                // For simplicity, handle only the first file
+                StringBuilder filePath = new StringBuilder(260); // MAX_PATH
+                DragQueryFile(hClipboardData, 0, filePath, (uint)filePath.Capacity);
+
+                string path = filePath.ToString();
+                string extension = Path.GetExtension(path).ToLower();
+
+                switch (extension)
+                {
+                    case ".jpg":
+                    case ".jpeg":
+                        return ("JPEG Image File", $"File: {path}");
+                    case ".png":
+                        return ("PNG Image File", $"File: {path}");
+                    case ".gif":
+                        return ("GIF Image File", $"File: {path}");
+                    case ".bmp":
+                        return ("BMP Image File", $"File: {path}");
+                    default:
+                        return ("File Drop", $"File: {path} (unsupported format)");
+                }
+            }
+            finally
+            {
+                GlobalUnlock(ptr);
+            }
+        }
+
         // Win32 API imports
         [DllImport("user32.dll")]
         private static extern bool OpenClipboard(IntPtr hWndNewOwner);
@@ -133,6 +146,9 @@ namespace GrokCLI.Commands
 
         [DllImport("kernel32.dll")]
         private static extern bool GlobalUnlock(IntPtr hMem);
+
+        [DllImport("shell32.dll")]
+        private static extern uint DragQueryFile(IntPtr hDrop, uint iFile, StringBuilder lpszFile, uint cch);
 
         // Clipboard format constants
         private const uint CF_TEXT = 1;         // ANSI text
