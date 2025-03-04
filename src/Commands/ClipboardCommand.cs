@@ -1,6 +1,9 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Xml;
 using GrokCLI.Services;
 
 namespace GrokCLI.Commands
@@ -21,16 +24,16 @@ namespace GrokCLI.Commands
                 Console.WriteLine($"Clipboard content type: {contentType}");
                 Console.Write("what do you want to call your clip: ");
                 string? name = Console.ReadLine();
-                Console.WriteLine($"clipping to {name}");
                 string prompt = $"{name}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        $"{GetClipboardUnicodeText()}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        "prompt:\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        $"{parameter}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n";
-                await new GrokService().Execute(prompt);
+                                        $"{Constants.MD_CODE_BRACKET} " +
+                                        $"{text}" +
+                                        $"{Constants.MD_CODE_BRACKET} " +
+                                        "prompt: " +
+                                        $"{Constants.MD_CODE_BRACKET}" +
+                                        $"{parameter}" +
+                                        $"{Constants.MD_CODE_BRACKET}";
+                string escaped = EscapeJsonString(prompt);
+                await new GrokService().Execute(escaped);
             }
             else
             {
@@ -39,12 +42,62 @@ namespace GrokCLI.Commands
             }
         }
 
+        public static string EscapeJsonString(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            // Using StringBuilder for efficient string manipulation
+            StringBuilder sb = new StringBuilder();
+            
+            foreach (char c in input)
+            {
+                switch (c)
+                {
+                    case '"':
+                        sb.Append("\\\"");
+                        break;
+                    case '\\':
+                        sb.Append("\\\\");
+                        break;
+                    case '\b':
+                        sb.Append("\\b");
+                        break;
+                    case '\f':
+                        sb.Append("\\f");
+                        break;
+                    case '\n':
+                        sb.Append("\\n");
+                        break;
+                    case '\r':
+                        sb.Append("\\r");
+                        break;
+                    case '\t':
+                        sb.Append("\\t");
+                        break;
+                    default:
+                        // For characters that need Unicode escaping (control characters)
+                        if (char.IsControl(c))
+                        {
+                            sb.Append($"\\u{(int)c:X4}");
+                        }
+                        else
+                        {
+                            sb.Append(c);
+                        }
+                        break;
+                }
+            }
+            
+            return sb.ToString();
+        }
+
         private static (string contentType, string text) GetClipboardContentInfo()
         {
             if (!OpenClipboard(IntPtr.Zero))
-                return ("Unknown", null);
+                return (Constants.UNKNOWN, null);
 
-            string contentType = "Unknown";
+            string contentType = Constants.UNKNOWN;
             string result = null;
 
             try
