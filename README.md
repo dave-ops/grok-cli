@@ -10,3 +10,12 @@ Grok CLI is a command-line interface (CLI) tool built with C# and .NET Core, des
 - **Logging**: Configurable logging with support for console and file output, including color themes (light and dark).
 - **Decompression**: Handles compressed API responses (e.g., Brotli, gzip, deflate) transparently.
 - **Extensible Commands**: Type-based command routing for easy addition of new commands via an `ICommand` interface.
+
+## Authentication
+
+### Step 1: Generate SSH Key Pair
+Users need an SSH key pair. They can generate one using:
+```bash
+ssh-keygen -t rsa -b 4096 -C "user@example.com"
+```
+
