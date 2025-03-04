@@ -1,11 +1,11 @@
+namespace GrokCLI.Services;
+
 using System.Net.Http;
 using System.Text;
-using GrokCLI.Commands;
 using GrokCLI.Helpers;
 using GrokCLI.Renderers;
 using GrokCLI.Utils;
 
-namespace GrokCLI.Services;
 public class GrokService : IService
 {
     public async Task<byte[]> Execute(string prompt)
