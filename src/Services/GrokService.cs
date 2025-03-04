@@ -7,8 +7,9 @@ using GrokCLI.Utils;
 namespace GrokCLI.Services;
 public class GrokService
 {
-    public async Task<byte[]> Execute(string message = "say your name")
+    public async Task<byte[]> Execute(string prompt)
     {
+        var message = prompt ?? Grok.GetDefaultUserPrompt();
         Logger.Info($"Grok service executing with message: {message}");
         var handler = new HttpClientHandler
         {
@@ -18,12 +19,12 @@ public class GrokService
         
         using (var client = new HttpClient(handler))
         {
-            var url = "https://grok.com/rest/app-chat/conversations/new";
+            var url = Grok.GetConversationUri();
 
             // Replace {message} placeholder with the actual message
             var jsonPayload = @"{
                 ""temporary"":false,
-                ""modelName"":""grok-latest"",
+                ""modelName"":""{version}"",
                 ""message"":""{message}"",
                 ""fileAttachments"":[],
                 ""imageAttachments"":[],
@@ -41,7 +42,8 @@ public class GrokService
                 ""customInstructions"":"""",
                 ""deepsearchPreset"":"""",
                 ""isReasoning"":false
-            }".Replace("{message}", message);
+            }".Replace("{message}", message)
+              .Replace("{version}", Grok.GetVersion());
 
             var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
@@ -59,15 +61,15 @@ public class GrokService
             try
             {
                 Logger.Info($"Sending request to {url}");
-                Logger.Info($"Request headers: {request.Headers}");
-                Logger.Info($"Request body: {jsonPayload}");
+                Logger.Debug($"Request headers: {request.Headers}");
+                Logger.Debug($"Request body: {jsonPayload}");
 
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 // Log response headers to understand encoding and content type
-                Logger.Info("Content-Type: " + response.Content.Headers.ContentType);
-                Logger.Info("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
+                Logger.Debug("Content-Type: " + response.Content.Headers.ContentType);
+                Logger.Debug("Content-Encoding: " + (response.Content.Headers.ContentEncoding?.FirstOrDefault() ?? "none"));
 
                 // Read the raw response as a byte array
                 byte[] responseBytes = await response.Content.ReadAsByteArrayAsync();
