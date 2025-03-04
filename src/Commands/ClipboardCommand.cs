@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Text.Json;
 using GrokCLI.Services;
 
 namespace GrokCLI.Commands
@@ -18,18 +18,18 @@ namespace GrokCLI.Commands
             (string contentType, string text) = GetClipboardContentInfo();
             if (text != null)
             {
+                string escaped = EscapeJsonString(text);
                 Console.WriteLine($"Clipboard content type: {contentType}");
                 Console.Write("what do you want to call your clip: ");
                 string? name = Console.ReadLine();
-                Console.WriteLine($"clipping to {name}");
                 string prompt = $"{name}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        $"{GetClipboardUnicodeText()}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        "prompt:\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n" +
-                                        $"{parameter}\n" +
-                                        $"{Constants.MD_CODE_BRACKET}\n";
+                                        $"{Constants.MD_CODE_BRACKET} " +
+                                        $"{escaped}" +
+                                        $"{Constants.MD_CODE_BRACKET} " +
+                                        "prompt: " +
+                                        $"{Constants.MD_CODE_BRACKET}" +
+                                        $"{parameter}" +
+                                        $"{Constants.MD_CODE_BRACKET}";
                 await new GrokService().Execute(prompt);
             }
             else
@@ -39,12 +39,25 @@ namespace GrokCLI.Commands
             }
         }
 
+        private static string EscapeJsonString(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+
+            return input.Replace("\\", "\\\\")
+                        .Replace("\"", "\\\"")
+                        .Replace("\n", "\\n")
+                        .Replace("\r", "\\r")
+                        .Replace("\t", "\\t")
+                        .Replace("\b", "\\b")
+                        .Replace("\f", "\\f");
+        }
+
         private static (string contentType, string text) GetClipboardContentInfo()
         {
             if (!OpenClipboard(IntPtr.Zero))
-                return ("Unknown", null);
+                return (Constants.UNKNOWN, null);
 
-            string contentType = "Unknown";
+            string contentType = Constants.UNKNOWN;
             string result = null;
 
             try
